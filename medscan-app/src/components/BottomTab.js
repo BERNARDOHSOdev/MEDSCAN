@@ -14,7 +14,7 @@ const tabs = [
   { route: "Profile", label: "Perfil", icon: "account-outline" }
 ];
 
-export default function BottomTab({ navigation, active = "Home" }) {
+export default function BottomTab({ navigation, active = "Home", mobileHome = false }) {
   const { colors, styles } = useAppTheme(createStyles);
   const insets = useSafeAreaInsets();
   const desktop = useDesktop();
@@ -25,7 +25,7 @@ export default function BottomTab({ navigation, active = "Home" }) {
     <View style={styles.sidebarFoot}><MaterialCommunityIcons name="heart-outline" size={20} color={colors.primary} /><Text style={styles.footText}>{"Seu cuidado,\nmais perto."}</Text></View>
   </View>;
   return (
-    <View style={[styles.shell, { bottom: Math.max(insets.bottom, 12) }]}>
+    <View style={[styles.shell, mobileHome && styles.mobileHomeShell, { bottom: Math.max(insets.bottom, 12) }]}>
       {tabs.map((tab) => {
         const isActive = active === tab.route;
         return (
@@ -38,20 +38,20 @@ export default function BottomTab({ navigation, active = "Home" }) {
             accessibilityRole="tab"
             accessibilityState={{ selected: isActive }}
             accessibilityLabel={tab.label}
-            style={[styles.item, isActive && { backgroundColor: colors.selectedSurface, borderRadius: 22 }]}
+            style={[styles.item, mobileHome && styles.mobileHomeItem, isActive && (mobileHome ? styles.mobileHomeSelected : styles.selectedItem)]}
           >
             <MaterialCommunityIcons
               name={tab.icon}
-              size={23}
-              color={isActive ? colors.primary : colors.textMuted}
+              size={mobileHome ? 21 : 23}
+              color={mobileHome ? (isActive ? "#27DEAB" : "#C6D0CF") : (isActive ? colors.primary : colors.textMuted)}
             />
             <Text
-              style={[styles.label, isActive && styles.activeLabel]}
+              style={[styles.label, mobileHome && styles.mobileHomeLabel, isActive && (mobileHome ? styles.mobileHomeActiveLabel : styles.activeLabel)]}
               numberOfLines={1}
               adjustsFontSizeToFit
               minimumFontScale={0.72}
             >
-              {tab.label}
+              {mobileHome && tab.route === "Monitoring" ? "Monitoramento" : tab.label}
             </Text>
           </TouchableOpacity>
         );
@@ -87,6 +87,7 @@ const createStyles = (colors) => StyleSheet.create({
     borderColor: colors.border,
     ...shadows.card
   },
+  mobileHomeShell: { backgroundColor: "#11191B", borderColor: "#263336", minHeight: 64, borderRadius: 32, paddingHorizontal: 5, paddingVertical: 5, shadowColor: "#000000", shadowOpacity: 0.4, shadowRadius: 20, elevation: 8 },
   item: {
     flex: 1,
     alignItems: "center",
@@ -94,6 +95,9 @@ const createStyles = (colors) => StyleSheet.create({
     gap: 5,
     minWidth: 0
   },
+  selectedItem: { backgroundColor: colors.selectedSurface, borderRadius: 22 },
+  mobileHomeItem: { minHeight: 52, gap: 3 },
+  mobileHomeSelected: { backgroundColor: "#064033", borderRadius: 24 },
   label: {
     fontFamily, fontSize: 11,
     color: colors.textMuted,
@@ -103,5 +107,7 @@ const createStyles = (colors) => StyleSheet.create({
   activeLabel: {
     color: colors.primary,
     fontWeight: "900"
-  }
+  },
+  mobileHomeLabel: { color: "#C6D0CF", fontSize: 10, fontWeight: "500" },
+  mobileHomeActiveLabel: { color: "#27DEAB", fontWeight: "700" }
 });

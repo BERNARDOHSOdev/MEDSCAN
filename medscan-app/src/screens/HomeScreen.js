@@ -3,7 +3,7 @@ import { useAppTheme } from "../context/ThemeContext";
 import { useDesktop, desktopPage, desktopContent } from "../utils/responsive";
 import React, { useCallback, useState } from "react";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -15,6 +15,7 @@ import { fontFamily } from "../constants/theme";
 import MedscanWordmark from "../components/MedscanWordmark";
 import { demoVitals } from "../utils/demoVitals";
 import DailyCarePanel from "../components/DailyCarePanel";
+import MobileHomeScreen from "./MobileHomeScreen";
 
 const metrics = [
   { title: "Glicose", icon: "water-outline", unit: "mg/dL", value: demoVitals.glucose, color: "#199D7C", darkColor: "#70DCB4" },
@@ -49,12 +50,14 @@ function nextWelcomePhrase() {
 export default function HomeScreen({ navigation }) {
   const { colors, styles, isDark } = useAppTheme(createStyles);
   const desktop = useDesktop();
+  const { width } = useWindowDimensions();
   const focused = useIsFocused();
   const [welcomePhrase, setWelcomePhrase] = useState(welcomePhrases[0]);
   useFocusEffect(useCallback(() => { setWelcomePhrase(nextWelcomePhrase()); }, []));
   const { user } = useAuth();
   const firstName = user?.name?.split(" ")[0] || "bem-vindo";
   const date = new Date().toLocaleDateString("pt-BR", { day: "numeric", month: "short" });
+  if (width <= 600 && isDark) return <MobileHomeScreen navigation={navigation} user={user} />;
   return (
     <SafeAreaView style={[styles.safe, desktop && desktopPage]} edges={["top", "left", "right"]}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.content, desktop && desktopContent]}>
