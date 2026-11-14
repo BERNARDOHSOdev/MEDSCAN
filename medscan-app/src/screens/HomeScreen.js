@@ -1,4 +1,3 @@
-import { careRoutes } from "../utils/careRecords";
 import { useAppTheme } from "../context/ThemeContext";
 import { useDesktop, desktopPage, desktopContent } from "../utils/responsive";
 import React, { useCallback, useState } from "react";
@@ -67,10 +66,6 @@ export default function HomeScreen({ navigation }) {
 
         <View style={styles.body}>
           <DailyCarePanel navigation={navigation}/>
-          <Text style={styles.sectionTitle}>Meu cuidado</Text>
-          <View style={{ flexDirection: "row", gap: 8 }}>
-            {[["medication", "pill", "Medicamentos"], ["appointment", "calendar-clock", "Consultas"], ["exams", "flask-outline", "Exames"]].map(([section, icon, title]) => <TouchableOpacity key={section} accessibilityRole="button" accessibilityLabel={title} onPress={() => section === "exams" ? navigation.navigate("History", { section: "exams", personId: "self", revision: Date.now() }) : navigation.navigate(careRoutes[section], { section, personId: "self", revision: Date.now() })} style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 18, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 18 }}><MaterialCommunityIcons name={icon} size={25} color={colors.primary}/><Text style={{ color: colors.text, fontFamily, fontSize: 11, fontWeight: "600" }}>{title}</Text></TouchableOpacity>)}
-          </View>
           <View style={styles.sectionRow}><Text style={styles.sectionTitle}>Visão geral</Text><Text style={styles.link}>Hoje, {date}</Text></View>
           <View style={desktop && styles.dashboardRow}>
           <TouchableOpacity accessibilityRole="button" onPress={() => navigation.navigate("History")} activeOpacity={0.9} style={[styles.recordCard, desktop && { flex: 1 }]}>
