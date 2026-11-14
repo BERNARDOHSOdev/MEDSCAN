@@ -10,7 +10,7 @@ import HomeScreen from "../screens/HomeScreen";
 import AnalyzeScreen from "../screens/AnalyzeScreen";
 import ResultScreen from "../screens/ResultScreen";
 import HistoryScreen from "../screens/HistoryScreen";
-import MonitoringScreen from "../screens/ResponsiveMonitoringScreen";
+import MonitoringScreen from "../screens/MonitoringScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import NotificationsScreen from "../screens/NotificationsScreen";
 
