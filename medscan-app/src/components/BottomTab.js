@@ -43,7 +43,7 @@ export default function BottomTab({ navigation, active = "Home", mobileHome = fa
             <MaterialCommunityIcons
               name={tab.icon}
               size={mobileHome ? 21 : 23}
-              color={mobileHome ? (isActive ? "#27DEAB" : "#C6D0CF") : (isActive ? colors.primary : colors.textMuted)}
+              color={mobileHome ? (isActive ? "#8BCDB0" : "#C6D0CF") : (isActive ? colors.primary : colors.textMuted)}
             />
             <Text
               style={[styles.label, mobileHome && styles.mobileHomeLabel, isActive && (mobileHome ? styles.mobileHomeActiveLabel : styles.activeLabel)]}
@@ -87,7 +87,7 @@ const createStyles = (colors) => StyleSheet.create({
     borderColor: colors.border,
     ...shadows.card
   },
-  mobileHomeShell: { backgroundColor: "#11191B", borderColor: "#263336", minHeight: 64, borderRadius: 32, paddingHorizontal: 5, paddingVertical: 5, shadowColor: "#000000", shadowOpacity: 0.4, shadowRadius: 20, elevation: 8 },
+  mobileHomeShell: { width: "96%", backgroundColor: "#171E1E", borderColor: "#27322F", minHeight: 64, borderRadius: 32, paddingHorizontal: 5, paddingVertical: 5, shadowColor: "#000000", shadowOpacity: 0.3, shadowRadius: 16, elevation: 6 },
   item: {
     flex: 1,
     alignItems: "center",
@@ -97,7 +97,7 @@ const createStyles = (colors) => StyleSheet.create({
   },
   selectedItem: { backgroundColor: colors.selectedSurface, borderRadius: 22 },
   mobileHomeItem: { minHeight: 52, gap: 3 },
-  mobileHomeSelected: { backgroundColor: "#064033", borderRadius: 24 },
+  mobileHomeSelected: { backgroundColor: "#25493B", borderRadius: 24 },
   label: {
     fontFamily, fontSize: 11,
     color: colors.textMuted,
@@ -108,6 +108,6 @@ const createStyles = (colors) => StyleSheet.create({
     color: colors.primary,
     fontWeight: "900"
   },
-  mobileHomeLabel: { color: "#C6D0CF", fontSize: 10, fontWeight: "500" },
-  mobileHomeActiveLabel: { color: "#27DEAB", fontWeight: "700" }
+  mobileHomeLabel: { color: "#C6D0CF", fontStyle: "italic", fontSize: 10, fontWeight: "500" },
+  mobileHomeActiveLabel: { color: "#8BCDB0", fontWeight: "600" }
 });
