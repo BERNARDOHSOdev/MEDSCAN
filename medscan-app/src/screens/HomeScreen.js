@@ -77,7 +77,7 @@ export default function HomeScreen({ navigation }) {
             <View style={styles.recordArt}><RecordArtwork active={focused}/></View>
             <View style={styles.cta}><Text style={styles.ctaText}>Ver prontuário</Text><MaterialCommunityIcons name="arrow-top-right" size={18} color={colors.onCta} /></View>
           </TouchableOpacity>
-          {desktop ? <View style={styles.desktopQuick}><Text style={styles.sectionTitle}>Como podemos ajudar?</Text><Text style={styles.metricNote}>Escolha por onde começar seu cuidado.</Text><ActionRow title="Conversar com a IA" subtitle="Conte o que está sentindo" icon="creation" onPress={() => navigation.navigate("Analyze", { type: "symptoms" })} /><ActionRow title="Adicionar exame" subtitle="Organize um novo documento" icon="file-plus-outline" color={colors.info} onPress={() => navigation.navigate("Analyze", { type: "exam" })} /></View> : null}
+          {desktop ? <View style={styles.desktopQuick}><Text style={styles.sectionTitle}>Como podemos ajudar?</Text><Text style={styles.metricNote}>Escolha por onde começar seu cuidado.</Text><ActionRow borderless title="Conversar com a IA" subtitle="Conte o que está sentindo" icon="creation" onPress={() => navigation.navigate("Analyze", { type: "symptoms" })} /><ActionRow borderless title="Adicionar exame" subtitle="Organize um novo documento" icon="file-plus-outline" color={colors.info} onPress={() => navigation.navigate("Analyze", { type: "exam" })} /></View> : null}
           </View>
 
           <View style={styles.sectionRow}>
@@ -100,8 +100,8 @@ export default function HomeScreen({ navigation }) {
           {!desktop ? <>
           <Text style={styles.sectionTitle}>Acesso rápido</Text>
           <View style={styles.actions}>
-            <ActionRow title="Conversar com a IA" subtitle="Entenda seus sintomas com mais contexto" icon="creation" onPress={() => navigation.navigate("Analyze", { type: "symptoms" })} />
-            <ActionRow title="Adicionar exame" subtitle="Envie uma imagem do seu documento" icon="file-plus-outline" color={colors.info} onPress={() => navigation.navigate("Analyze", { type: "exam" })} />
+            <ActionRow borderless title="Conversar com a IA" subtitle="Entenda seus sintomas com mais contexto" icon="creation" onPress={() => navigation.navigate("Analyze", { type: "symptoms" })} />
+            <ActionRow borderless title="Adicionar exame" subtitle="Envie uma imagem do seu documento" icon="file-plus-outline" color={colors.info} onPress={() => navigation.navigate("Analyze", { type: "exam" })} />
           </View>
           </> : null}
           {desktop ? <View style={styles.footer}><MaterialCommunityIcons name="shield-check-outline" size={16} color={colors.textMuted} /><Text style={styles.footerText}>Informação para cuidar melhor de você.</Text></View> : null}
@@ -126,14 +126,14 @@ const createStyles = (colors) => StyleSheet.create({
   recordArt: { position:"absolute", right:-12, bottom:0 },
   metricReading: { flexDirection:"row", alignItems:"center" },
   dashboardRow: { flexDirection: "row", gap: 24, alignItems: "stretch" },
-  desktopQuick: { flex: 1, gap: 14, padding: 22, borderRadius: 24, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
+  desktopQuick: { flex: 1, gap: 14, padding: 22, borderRadius: 24, backgroundColor: colors.surface },
   safe: { flex: 1, backgroundColor: colors.background },
   content: { width: "100%", maxWidth: 720, alignSelf: "center", paddingBottom: 110 },
   body: { padding: 20, gap: 17 },
   sectionRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 5, gap: 8 },
   sectionTitle: { color: colors.text, fontFamily, fontSize: 16, fontWeight: "700", letterSpacing: -0.3 },
   link: { color: colors.primary, fontFamily, fontSize: 11, fontWeight: "600", paddingVertical: 8 },
-  recordCard: { backgroundColor: colors.hero, borderWidth: 1, borderColor: colors.heroHalo, borderRadius: 24, padding: 21, minHeight:238, overflow: "hidden", shadowColor: "#064D40", shadowOpacity: 0.15, shadowRadius: 18, shadowOffset: { width: 0, height: 8 }, elevation: 3 },
+  recordCard: { backgroundColor: colors.hero, borderRadius: 24, padding: 21, minHeight:238, overflow: "hidden", shadowColor: "#064D40", shadowOpacity: 0.15, shadowRadius: 18, shadowOffset: { width: 0, height: 8 }, elevation: 3 },
   cardHalo: { position: "absolute", right: -45, bottom: -90, width: 200, height: 200, borderRadius: 100, borderWidth: 24, borderColor: "#ffffff08", backgroundColor: "#ffffff04" },
   eyebrow: { color: "#C1F0E4", fontFamily, fontSize: 10, fontWeight: "700", letterSpacing: 1.3 },
   cardTitle: { color: "white", fontFamily, fontSize: 23, fontWeight: "700", marginTop: 14, letterSpacing: -0.6, paddingRight:70 },
@@ -141,7 +141,7 @@ const createStyles = (colors) => StyleSheet.create({
   cta: { alignSelf: "flex-start", backgroundColor: colors.cta, flexDirection: "row", alignItems: "center", gap: 12, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 11, marginTop: 18 },
   ctaText: { color: colors.onCta, fontFamily, fontSize: 12, fontWeight: "700" },
   grid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", gap: 12 },
-  metric: { width: "48%", flexGrow: 1, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 20, padding: 14, shadowColor:"#075E52", shadowOpacity:.035, shadowRadius:12, shadowOffset:{width:0,height:5}, elevation:1 },
+  metric: { width: "48%", flexGrow: 1, backgroundColor: colors.surface, borderRadius: 20, padding: 14, shadowColor:"#075E52", shadowOpacity:.035, shadowRadius:12, shadowOffset:{width:0,height:5}, elevation:1 },
   metricHeader: { flexDirection: "row", alignItems: "center", gap: 7 },
   metricIcon: { width: 27, height: 27, borderRadius: 8, backgroundColor: colors.primaryLight, alignItems: "center", justifyContent: "center" },
   metricLabel: { color: colors.textMuted, fontFamily, fontSize: 12 },

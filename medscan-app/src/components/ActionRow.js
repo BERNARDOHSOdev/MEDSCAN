@@ -10,7 +10,8 @@ export default function ActionRow({
   icon,
   color,
   onPress,
-  selected = false
+  selected = false,
+  borderless = false
 }) {
   const { colors, styles } = useAppTheme(createStyles);
   color = color || colors.primary;
@@ -20,7 +21,7 @@ export default function ActionRow({
       accessibilityLabel={title}
       onPress={onPress}
       activeOpacity={0.85}
-      style={[styles.row, selected && styles.selected]}
+      style={[styles.row, borderless && styles.borderless, selected && styles.selected]}
     >
       <View style={[styles.icon, { backgroundColor: `${color}16` }]}>
         <MaterialCommunityIcons name={icon} size={22} color={color} />
@@ -50,6 +51,7 @@ const createStyles = (colors) => StyleSheet.create({
     borderColor: colors.primary,
     backgroundColor: colors.selectedSurface
   },
+  borderless: { borderWidth: 0 },
   icon: {
     width: 42,
     height: 42,

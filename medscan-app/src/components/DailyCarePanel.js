@@ -109,7 +109,7 @@ const createStyles = colors => StyleSheet.create({
   subtitle: { fontFamily, fontSize: 12, lineHeight: 18, color: colors.textMuted },
   refresh: { width: 40, height: 40, alignItems: "center", justifyContent: "center", borderRadius: 13, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
   cards: { gap: 10 }, desktopCards: { flexDirection: "row", alignItems: "stretch" },
-  card: { minWidth: 0, padding: 18, gap: 8, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 21 },
+  card: { minWidth: 0, padding: 18, gap: 8, backgroundColor: colors.surface, borderRadius: 21 },
   mobileCard: { minHeight: 82, paddingHorizontal: 14, paddingVertical: 11, flexDirection: "row", alignItems: "center", gap: 12 },
   mobileText: { flex: 1, minWidth: 0, gap: 1 },
   mobileLabel: { flex: 0, fontSize: 11 },
@@ -119,6 +119,6 @@ const createStyles = colors => StyleSheet.create({
   label: { fontFamily, fontSize: 12, fontWeight: "600", color: colors.textMuted, flex: 1 },
   badge: { fontFamily, fontSize: 12, lineHeight: 18, fontWeight: "700" }, title: { fontFamily, fontSize: 16, lineHeight: 22, fontWeight: "700", color: colors.text },
   detail: { fontFamily, fontSize: 12, lineHeight: 18, color: colors.textMuted }, footer: { fontFamily, fontSize: 11, lineHeight: 17, color: colors.primary, marginTop: 5 },
-  notice: { padding: 20, gap: 14, flexDirection: "row", alignItems: "center", backgroundColor: colors.surface, borderRadius: 21, borderWidth: 1, borderColor: colors.border },
+  notice: { padding: 20, gap: 14, flexDirection: "row", alignItems: "center", backgroundColor: colors.surface, borderRadius: 21 },
   link: { fontFamily, fontSize: 12, fontWeight: "700", lineHeight: 24, color: colors.primary }
 });
