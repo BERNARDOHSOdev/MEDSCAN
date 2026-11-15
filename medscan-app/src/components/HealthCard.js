@@ -40,8 +40,6 @@ const createStyles = (colors) => StyleSheet.create({
     padding: 14,
     alignItems: "flex-start",
     justifyContent: "space-between",
-    borderWidth: 1,
-    borderColor: colors.border,
     ...shadows.card
   },
   header: {

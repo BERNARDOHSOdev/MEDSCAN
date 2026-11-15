@@ -250,7 +250,7 @@ export default function MonitoringScreen({ navigation }) {
             <View style={styles.alertCopy}><Text style={styles.alertTitle}>Nenhum alerta para exibir</Text><Text style={styles.alertDescription}>Seus alertas e lembretes aparecerão aqui.</Text></View>
           </Card> : null}
           {alerts.map((alert) => (
-            <Card key={alert.title} style={styles.alertCard} bordered>
+            <Card key={alert.title} style={styles.alertCard}>
               <View style={styles.alertIcon}>
                 <MaterialCommunityIcons
                   name={alert.level === "Atencao" || alert.level === "Atenção" ? "alert" : "pill"}
@@ -603,8 +603,6 @@ const createStyles = (colors) => StyleSheet.create({
   addDevice: {
     backgroundColor: colors.surface,
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
     padding: 16,
     flexDirection: "row",
     alignItems: "center",

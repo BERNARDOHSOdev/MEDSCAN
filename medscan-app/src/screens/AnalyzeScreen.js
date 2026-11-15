@@ -328,8 +328,6 @@ const createStyles = (colors) => StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
     ...shadows.card
   },
   preview: {

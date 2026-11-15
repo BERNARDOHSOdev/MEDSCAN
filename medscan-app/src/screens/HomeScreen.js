@@ -77,7 +77,7 @@ export default function HomeScreen({ navigation }) {
             <View style={styles.recordArt}><RecordArtwork active={focused}/></View>
             <View style={styles.cta}><Text style={styles.ctaText}>Ver prontuário</Text><MaterialCommunityIcons name="arrow-top-right" size={18} color={colors.onCta} /></View>
           </TouchableOpacity>
-          {desktop ? <View style={styles.desktopQuick}><Text style={styles.sectionTitle}>Como podemos ajudar?</Text><Text style={styles.metricNote}>Escolha por onde começar seu cuidado.</Text><ActionRow borderless title="Conversar com a IA" subtitle="Conte o que está sentindo" icon="creation" onPress={() => navigation.navigate("Analyze", { type: "symptoms" })} /><ActionRow borderless title="Adicionar exame" subtitle="Organize um novo documento" icon="file-plus-outline" color={colors.info} onPress={() => navigation.navigate("Analyze", { type: "exam" })} /></View> : null}
+          {desktop ? <View style={styles.desktopQuick}><Text style={styles.sectionTitle}>Como podemos ajudar?</Text><Text style={styles.metricNote}>Escolha por onde começar seu cuidado.</Text><ActionRow title="Conversar com a IA" subtitle="Conte o que está sentindo" icon="creation" onPress={() => navigation.navigate("Analyze", { type: "symptoms" })} /><ActionRow title="Adicionar exame" subtitle="Organize um novo documento" icon="file-plus-outline" color={colors.info} onPress={() => navigation.navigate("Analyze", { type: "exam" })} /></View> : null}
           </View>
 
           <View style={styles.sectionRow}>
@@ -100,8 +100,8 @@ export default function HomeScreen({ navigation }) {
           {!desktop ? <>
           <Text style={styles.sectionTitle}>Acesso rápido</Text>
           <View style={styles.actions}>
-            <ActionRow borderless title="Conversar com a IA" subtitle="Entenda seus sintomas com mais contexto" icon="creation" onPress={() => navigation.navigate("Analyze", { type: "symptoms" })} />
-            <ActionRow borderless title="Adicionar exame" subtitle="Envie uma imagem do seu documento" icon="file-plus-outline" color={colors.info} onPress={() => navigation.navigate("Analyze", { type: "exam" })} />
+            <ActionRow title="Conversar com a IA" subtitle="Entenda seus sintomas com mais contexto" icon="creation" onPress={() => navigation.navigate("Analyze", { type: "symptoms" })} />
+            <ActionRow title="Adicionar exame" subtitle="Envie uma imagem do seu documento" icon="file-plus-outline" color={colors.info} onPress={() => navigation.navigate("Analyze", { type: "exam" })} />
           </View>
           </> : null}
           {desktop ? <View style={styles.footer}><MaterialCommunityIcons name="shield-check-outline" size={16} color={colors.textMuted} /><Text style={styles.footerText}>Informação para cuidar melhor de você.</Text></View> : null}

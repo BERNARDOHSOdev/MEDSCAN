@@ -31,7 +31,7 @@ export default function RecordSearch({ history, records, personId, preferences, 
       {errors.filter(Boolean).map(message=><Text key={message} accessibilityRole="alert" style={[text,{fontSize:12,color:colors.danger}]}>{message}</Text>)}
       <Text accessibilityLiveRegion="polite" style={[text,{fontSize:12,color:colors.textMuted}]}>{loading?"Carregando registros…":`${results.length} ${results.length===1?"resultado":"resultados"} para “${query.trim()}”`}</Text>
       {!loading&&!results.length?<Text style={[text,{fontSize:12,color:colors.textMuted}]}>Nenhum registro encontrado. Tente outro termo ou categoria.</Text>:null}
-      {results.slice(0,visible).map(item=><TouchableOpacity key={item.id} accessibilityRole="button" onPress={()=>open(item)} style={{padding:16,borderRadius:18,gap:6,borderWidth:1,borderColor:colors.border,backgroundColor:colors.surface}}>
+      {results.slice(0,visible).map(item=><TouchableOpacity key={item.id} accessibilityRole="button" onPress={()=>open(item)} style={{padding:16,borderRadius:18,gap:6,backgroundColor:colors.surface}}>
         <Text style={[text,{fontSize:11,color:colors.primary,fontWeight:"700"}]}>{careKinds[item.kind]?.title || (item.kind==="symptoms"?"Sintomas e orientações":"Exames e imagens")}{item.record?.archived?" · Arquivado":""}</Text>
         <Text style={[text,{fontWeight:"700"}]}>{item.record?.name || (preferences.hideHealthPreviews?"Prévia de saúde oculta":item.group.latest.possibleCondition || "Análise registrada")}</Text>
         {item.record?.professional?<Text style={[text,{fontSize:12,color:colors.textMuted}]}>{item.record.professional}</Text>:null}
