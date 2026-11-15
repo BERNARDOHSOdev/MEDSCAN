@@ -64,9 +64,9 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.healthBadge}><View style={styles.healthDot}/><Text style={styles.healthText}>Seu espaço de saúde</Text></View>
         </LinearGradient>
 
-        <View style={styles.body}>
+        <View style={[styles.body, !desktop && styles.mobileBody]}>
           <DailyCarePanel navigation={navigation}/>
-          <View style={styles.sectionRow}><Text style={styles.sectionTitle}>Visão geral</Text><Text style={styles.link}>Hoje, {date}</Text></View>
+          <View style={[styles.sectionRow, !desktop && styles.mobileInset]}><Text style={styles.sectionTitle}>Visão geral</Text><Text style={styles.link}>Hoje, {date}</Text></View>
           <View style={desktop && styles.dashboardRow}>
           <TouchableOpacity accessibilityRole="button" onPress={() => navigation.navigate("History")} activeOpacity={0.9} style={[styles.recordCard, desktop && { flex: 1 }]}>
             <LinearGradient colors={isDark ? ["#064C40", "#092C2B"] : ["#07584F", "#09937B"]} start={{x:0,y:0}} end={{x:1,y:1}} style={StyleSheet.absoluteFillObject}/>
@@ -80,7 +80,7 @@ export default function HomeScreen({ navigation }) {
           {desktop ? <View style={styles.desktopQuick}><Text style={styles.sectionTitle}>Como podemos ajudar?</Text><Text style={styles.metricNote}>Escolha por onde começar seu cuidado.</Text><ActionRow title="Conversar com a IA" subtitle="Conte o que está sentindo" icon="creation" onPress={() => navigation.navigate("Analyze", { type: "symptoms" })} /><ActionRow title="Adicionar exame" subtitle="Organize um novo documento" icon="file-plus-outline" color={colors.info} onPress={() => navigation.navigate("Analyze", { type: "exam" })} /></View> : null}
           </View>
 
-          <View style={styles.sectionRow}>
+          <View style={[styles.sectionRow, !desktop && styles.mobileInset]}>
             <Text style={styles.sectionTitle}>Sinais vitais</Text>
             <TouchableOpacity accessibilityRole="button" onPress={() => navigation.navigate("Monitoring")}><Text style={styles.link}>Ver monitoramento</Text></TouchableOpacity>
           </View>
@@ -96,10 +96,10 @@ export default function HomeScreen({ navigation }) {
               </TouchableOpacity>
             );})}
           </View>
-          <View style={styles.demoNote}><MaterialCommunityIcons name="information-outline" size={16} color={colors.textMuted}/><Text style={[styles.metricNote,{flex:1,marginTop:0}]}>Valores e gráficos demonstrativos, sem leitura de dispositivos.</Text></View>
+          <View style={[styles.demoNote, !desktop && styles.mobileInset]}><MaterialCommunityIcons name="information-outline" size={16} color={colors.textMuted}/><Text style={[styles.metricNote,{flex:1,marginTop:0}]}>Valores e gráficos demonstrativos, sem leitura de dispositivos.</Text></View>
 
           {!desktop ? <>
-          <Text style={styles.sectionTitle}>Acesso rápido</Text>
+          <Text style={[styles.sectionTitle, styles.mobileInset]}>Acesso rápido</Text>
           <View style={styles.actions}>
             <ActionRow title="Conversar com a IA" subtitle="Entenda seus sintomas com mais contexto" icon="creation" onPress={() => navigation.navigate("Analyze", { type: "symptoms" })} />
             <ActionRow title="Adicionar exame" subtitle="Envie uma imagem do seu documento" icon="file-plus-outline" color={colors.info} onPress={() => navigation.navigate("Analyze", { type: "exam" })} />
@@ -132,6 +132,8 @@ const createStyles = (colors) => StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   content: { width: "100%", maxWidth: 720, alignSelf: "center", paddingBottom: 110 },
   body: { padding: 20, gap: 17 },
+  mobileBody: { paddingHorizontal: 0 },
+  mobileInset: { marginHorizontal: 20 },
   sectionRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 5, gap: 8 },
   sectionTitle: { color: colors.text, fontFamily, fontSize: 16, fontWeight: "700", letterSpacing: -0.3 },
   link: { color: colors.primary, fontFamily, fontSize: 11, fontWeight: "600", paddingVertical: 8 },

@@ -83,7 +83,7 @@ export default function DailyCarePanel({ navigation }) {
     ? `${summary.pendingEarlier} ${summary.pendingEarlier === 1 ? "horário sem confirmação" : "horários sem confirmação"}`
     : card.badge;
   return <View style={styles.panel}>
-    <View style={styles.headingRow}>
+    <View style={[styles.headingRow, !desktop && styles.mobileHeadingRow]}>
       <View style={{ flex: 1, gap: 4 }}><Text accessibilityRole="header" style={styles.heading}>Meu dia</Text>{desktop ? <Text style={styles.subtitle}>Sua rotina e os próximos cuidados.</Text> : null}</View>
       {status !== "guest" ? <TouchableOpacity accessibilityRole="button" accessibilityLabel="Atualizar Meu dia" disabled={status === "loading"} onPress={() => setRevision(value => value + 1)} style={styles.refresh}><MaterialCommunityIcons name="refresh" size={21} color={colors.primary}/></TouchableOpacity> : null}
     </View>
@@ -105,6 +105,7 @@ export default function DailyCarePanel({ navigation }) {
 
 const createStyles = colors => StyleSheet.create({
   panel: { gap: 14 }, headingRow: { flexDirection: "row", alignItems: "center", gap: 12 },
+  mobileHeadingRow: { marginHorizontal: 20 },
   heading: { fontFamily, fontSize: 20, fontWeight: "700", color: colors.text, letterSpacing: -0.5 },
   subtitle: { fontFamily, fontSize: 12, lineHeight: 18, color: colors.textMuted },
   refresh: { width: 40, height: 40, alignItems: "center", justifyContent: "center", borderRadius: 13, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
