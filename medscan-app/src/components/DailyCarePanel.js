@@ -79,17 +79,26 @@ export default function DailyCarePanel({ navigation }) {
       footer: "Ver minha carteira", date: vaccine?.date
     }
   ];
+  const compactBadge = card => card.kind === "medication" && summary.pendingEarlier
+    ? `${summary.pendingEarlier} ${summary.pendingEarlier === 1 ? "horário sem confirmação" : "horários sem confirmação"}`
+    : card.badge;
   return <View style={styles.panel}>
     <View style={styles.headingRow}>
-      <View style={{ flex: 1, gap: 4 }}><Text accessibilityRole="header" style={styles.heading}>Meu dia</Text><Text style={styles.subtitle}>Sua rotina e os próximos cuidados.</Text></View>
+      <View style={{ flex: 1, gap: 4 }}><Text accessibilityRole="header" style={styles.heading}>Meu dia</Text>{desktop ? <Text style={styles.subtitle}>Sua rotina e os próximos cuidados.</Text> : null}</View>
       {status !== "guest" ? <TouchableOpacity accessibilityRole="button" accessibilityLabel="Atualizar Meu dia" disabled={status === "loading"} onPress={() => setRevision(value => value + 1)} style={styles.refresh}><MaterialCommunityIcons name="refresh" size={21} color={colors.primary}/></TouchableOpacity> : null}
     </View>
     {status === "guest" ? <View style={styles.notice}><MaterialCommunityIcons name="calendar-heart" size={25} color={colors.primary}/><View style={{ flex: 1, gap: 6 }}><Text style={styles.title}>Seu cuidado começa aqui</Text><Text style={styles.detail}>Entre para ver seus medicamentos, consultas e vacinação.</Text><TouchableOpacity accessibilityRole="button" onPress={() => navigation.navigate("Login", { returnToPrevious: true })}><Text style={styles.link}>Entrar na minha conta →</Text></TouchableOpacity></View></View>
       : status === "loading" ? <View style={styles.notice} accessibilityLiveRegion="polite"><ActivityIndicator color={colors.primary}/><Text style={styles.detail}>Carregando sua agenda…</Text></View>
       : status === "error" ? <View style={styles.notice}><MaterialCommunityIcons name="cloud-alert-outline" size={25} color={colors.primary}/><View style={{ flex: 1, gap: 6 }}><Text accessibilityRole="alert" style={styles.detail}>Não foi possível carregar sua agenda.</Text><TouchableOpacity accessibilityRole="button" onPress={() => setRevision(value => value + 1)}><Text style={styles.link}>Tentar novamente</Text></TouchableOpacity></View></View>
-      : <View style={[styles.cards, desktop && styles.desktopCards]}>{cards.map(card => <TouchableOpacity key={card.kind} accessibilityRole="button" onPress={() => open(card.kind, card.date)} style={[styles.card, desktop && { flex: 1 }]} activeOpacity={0.8}>
-        <View style={styles.cardTop}><View style={[styles.icon, { backgroundColor: `${card.accent}16` }]}><MaterialCommunityIcons name={card.icon} size={22} color={card.accent}/></View><Text style={styles.label}>{card.label}</Text><MaterialCommunityIcons name="chevron-right" size={18} color={colors.textMuted}/></View>
-        <Text style={[styles.badge, { color: card.accent }]}>{card.badge}</Text><Text style={styles.title}>{card.title}</Text><Text style={styles.detail}>{card.detail}</Text><Text style={styles.footer}>{card.footer}</Text>
+      : <View style={[styles.cards, desktop && styles.desktopCards]}>{cards.map(card => <TouchableOpacity key={card.kind} accessibilityRole="button" accessibilityLabel={`${card.label}: ${card.title}. ${desktop ? card.badge : compactBadge(card)}`} onPress={() => open(card.kind, card.date)} style={[styles.card, desktop ? { flex: 1 } : styles.mobileCard]} activeOpacity={0.8}>
+        {desktop ? <>
+          <View style={styles.cardTop}><View style={[styles.icon, { backgroundColor: `${card.accent}16` }]}><MaterialCommunityIcons name={card.icon} size={22} color={card.accent}/></View><Text style={styles.label}>{card.label}</Text><MaterialCommunityIcons name="chevron-right" size={18} color={colors.textMuted}/></View>
+          <Text style={[styles.badge, { color: card.accent }]}>{card.badge}</Text><Text style={styles.title}>{card.title}</Text><Text style={styles.detail}>{card.detail}</Text><Text style={styles.footer}>{card.footer}</Text>
+        </> : <>
+          <View style={[styles.icon, { backgroundColor: `${card.accent}16` }]}><MaterialCommunityIcons name={card.icon} size={22} color={card.accent}/></View>
+          <View style={styles.mobileText}><Text style={[styles.label, styles.mobileLabel]}>{card.label}</Text><Text style={styles.mobileTitle} numberOfLines={1}>{card.title}</Text><Text style={[styles.mobileBadge, { color: card.accent }]} numberOfLines={1}>{compactBadge(card)}</Text></View>
+          <MaterialCommunityIcons name="chevron-right" size={20} color={colors.textMuted}/>
+        </>}
       </TouchableOpacity>)}</View>}
   </View>;
 }
@@ -101,6 +110,11 @@ const createStyles = colors => StyleSheet.create({
   refresh: { width: 40, height: 40, alignItems: "center", justifyContent: "center", borderRadius: 13, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
   cards: { gap: 10 }, desktopCards: { flexDirection: "row", alignItems: "stretch" },
   card: { minWidth: 0, padding: 18, gap: 8, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 21 },
+  mobileCard: { minHeight: 82, paddingHorizontal: 14, paddingVertical: 11, flexDirection: "row", alignItems: "center", gap: 12 },
+  mobileText: { flex: 1, minWidth: 0, gap: 1 },
+  mobileLabel: { flex: 0, fontSize: 11 },
+  mobileTitle: { fontFamily, fontSize: 15, lineHeight: 21, fontWeight: "700", color: colors.text },
+  mobileBadge: { fontFamily, fontSize: 11, lineHeight: 17, fontWeight: "600" },
   cardTop: { flexDirection: "row", gap: 10, alignItems: "center", marginBottom: 4 }, icon: { width: 38, height: 38, borderRadius: 12, alignItems: "center", justifyContent: "center" },
   label: { fontFamily, fontSize: 12, fontWeight: "600", color: colors.textMuted, flex: 1 },
   badge: { fontFamily, fontSize: 12, lineHeight: 18, fontWeight: "700" }, title: { fontFamily, fontSize: 16, lineHeight: 22, fontWeight: "700", color: colors.text },
