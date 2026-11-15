@@ -4,18 +4,18 @@ import { useDesktop } from "../utils/responsive";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { fontFamily, radius, shadows } from "../constants/theme";
+import { fontFamily } from "../constants/theme";
 import MedscanWordmark from "./MedscanWordmark";
 
 const tabs = [
-  { route: "Home", label: "Início", icon: "home-outline" },
-  { route: "History", label: "Prontuário", icon: "file-document-outline" },
+  { route: "Home", label: "Início", icon: "home-outline", activeIcon: "home" },
+  { route: "History", label: "Prontuário", icon: "file-document-outline", activeIcon: "file-document" },
   { route: "Monitoring", label: "Monitorar", icon: "heart-pulse" },
-  { route: "Profile", label: "Perfil", icon: "account-outline" }
+  { route: "Profile", label: "Perfil", icon: "account-outline", activeIcon: "account" }
 ];
 
 export default function BottomTab({ navigation, active = "Home" }) {
-  const { colors, styles } = useAppTheme(createStyles);
+  const { colors, styles, isDark } = useAppTheme(createStyles);
   const insets = useSafeAreaInsets();
   const desktop = useDesktop();
   if (desktop) return <View style={styles.sidebar}>
@@ -38,18 +38,18 @@ export default function BottomTab({ navigation, active = "Home" }) {
             accessibilityRole="tab"
             accessibilityState={{ selected: isActive }}
             accessibilityLabel={tab.label}
-            style={[styles.item, isActive && { backgroundColor: colors.selectedSurface, borderRadius: 22 }]}
+            style={[styles.item, isActive && styles.activeItem]}
           >
             <MaterialCommunityIcons
-              name={tab.icon}
-              size={23}
-              color={isActive ? colors.primary : colors.textMuted}
+              name={isActive ? tab.activeIcon || tab.icon : tab.icon}
+              size={isActive ? 26 : 24}
+              color={isActive ? colors.primary : isDark ? "#B9C9C5" : colors.textMuted}
             />
             <Text
               style={[styles.label, isActive && styles.activeLabel]}
               numberOfLines={1}
               adjustsFontSizeToFit
-              minimumFontScale={0.72}
+              minimumFontScale={0.8}
             >
               {tab.label}
             </Text>
@@ -71,37 +71,44 @@ const createStyles = (colors) => StyleSheet.create({
   footText: { fontFamily, fontSize: 14, lineHeight: 21, color: colors.primary },
   shell: {
     position: "absolute",
-    width: "92%",
-    maxWidth: 680,
+    width: "94%",
+    maxWidth: 480,
     alignSelf: "center",
-    bottom: 14,
-    minHeight: 70,
-    borderRadius: radius.xl,
+    minHeight: 76,
+    borderRadius: 28,
     backgroundColor: colors.surface,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 8,
-    paddingVertical: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 6,
     borderWidth: 1,
     borderColor: colors.border,
-    ...shadows.card
+    shadowColor: "#071917",
+    shadowOffset: { width: 0, height: 9 },
+    shadowOpacity: 0.18,
+    shadowRadius: 24,
+    elevation: 8
   },
   item: {
     flex: 1,
+    minHeight: 62,
     alignItems: "center",
     justifyContent: "center",
-    gap: 5,
+    gap: 3,
+    borderRadius: 22,
     minWidth: 0
   },
+  activeItem: { backgroundColor: colors.selectedSurface },
   label: {
-    fontFamily, fontSize: 11,
+    fontFamily, fontSize: 11.5,
     color: colors.textMuted,
-    fontWeight: "700",
+    fontWeight: "600",
     letterSpacing: 0
   },
   activeLabel: {
     color: colors.primary,
-    fontWeight: "900"
+    fontWeight: "700"
   }
 });
+
