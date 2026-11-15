@@ -131,7 +131,7 @@ const createStyles = (colors) => StyleSheet.create({
   desktopQuick: { flex: 1, gap: 14, padding: 22, borderRadius: 24, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
   safe: { flex: 1, backgroundColor: colors.background },
   content: { width: "100%", maxWidth: 720, alignSelf: "center", paddingBottom: 110 },
-  body: { padding: 20, gap: 17 },
+  body: { paddingVertical: 20, paddingHorizontal: 20, gap: 17 },
   mobileBody: { paddingHorizontal: 0 },
   mobileInset: { marginHorizontal: 20 },
   sectionRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 5, gap: 8 },
