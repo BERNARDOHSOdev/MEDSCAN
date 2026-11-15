@@ -25,7 +25,7 @@ export default function BottomTab({ navigation, active = "Home" }) {
     <View style={styles.sidebarFoot}><MaterialCommunityIcons name="heart-outline" size={20} color={colors.primary} /><Text style={styles.footText}>{"Seu cuidado,\nmais perto."}</Text></View>
   </View>;
   return (
-    <View style={[styles.shell, isDark && styles.darkShell, { bottom: Math.max(insets.bottom, 12) }]}>
+    <View style={[styles.shell, { bottom: Math.max(insets.bottom, 12) }]}>
       {tabs.map((tab) => {
         const isActive = active === tab.route;
         return (
@@ -90,7 +90,6 @@ const createStyles = (colors) => StyleSheet.create({
     shadowRadius: 24,
     elevation: 8
   },
-  darkShell: { backgroundColor: "#171D1F", borderColor: "#293538" },
   item: {
     flex: 1,
     minHeight: 62,
