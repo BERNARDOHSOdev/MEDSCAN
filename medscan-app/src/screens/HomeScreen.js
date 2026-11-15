@@ -105,7 +105,7 @@ export default function HomeScreen({ navigation }) {
             <ActionRow title="Adicionar exame" subtitle="Envie uma imagem do seu documento" icon="file-plus-outline" color={colors.info} onPress={() => navigation.navigate("Analyze", { type: "exam" })} />
           </View>
           </> : null}
-          <View style={styles.footer}><MaterialCommunityIcons name="shield-check-outline" size={16} color={colors.textMuted} /><Text style={styles.footerText}>Informação para cuidar melhor de você.</Text></View>
+          {desktop ? <View style={styles.footer}><MaterialCommunityIcons name="shield-check-outline" size={16} color={colors.textMuted} /><Text style={styles.footerText}>Informação para cuidar melhor de você.</Text></View> : null}
         </View>
       </ScrollView>
       <BottomTab navigation={navigation} active="Home" />
