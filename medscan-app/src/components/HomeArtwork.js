@@ -68,12 +68,14 @@ export function RecordArtwork({ active = true }) {
     </Svg>
   </View>;
 }
-export function HeaderArtwork({ dark, active = true }) {
+export function HeaderArtwork({ dark, active = true, compact = false }) {
   const focused = useIsFocused();
   const phase = useDemoMotion(active && focused, 2700);
   const sway = Math.sin(phase * Math.PI * 2);
   const lift = -18 * (1 - Math.cos(phase * Math.PI * 2)) / 2;
-  return <View pointerEvents="none" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{position:'absolute',right:-32,bottom:-45,width:210,height:230,opacity: dark ? 0.5 : 0.8}}>
+  return <View pointerEvents="none" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={compact
+    ? {position:'absolute',right:-12,bottom:-16,width:140,height:155,opacity: dark ? 0.32 : 0.5}
+    : {position:'absolute',right:-32,bottom:-45,width:210,height:230,opacity: dark ? 0.5 : 0.8}}>
     <Svg width="100%" height="100%" viewBox="0 0 210 230"><Circle cx="130" cy="102" r="91" fill={dark?'#0B6F5E':'#B6E9DB'}/><Circle cx="90" cy="203" r="89" fill={dark?'#105549':'#82CDB8'} opacity=".6"/><G transform={`translate(0 ${lift}) rotate(${14 + sway * 6} 135 133)`}><Rect x="89" y="54" width="105" height="123" rx="22" fill={dark?'#186354':'#E2F8F0'} stroke={dark?'#387F71':'#FFFFFF'} strokeWidth="2"/><Path d="M129 81 H150 V102 H171 V123 H150 V144 H129 V123 H108 V102 H129 Z" fill={dark?'#78CCB3':'#8ACEBA'} opacity=".7"/></G></Svg>
   </View>;
 }

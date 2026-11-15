@@ -121,7 +121,7 @@ export default function HistoryScreen({ navigation, route }) {
   }
   return <SafeAreaView style={[styles.safe, desktop && desktopPage]}>
     <ScrollView contentContainerStyle={[styles.content, desktop && desktopContent]}>
-      <BrandHero title="Prontuário" subtitle="Seu histórico, mais claro. Tudo sobre seu cuidado em um só lugar." onBack={() => navigation.canGoBack() ? navigation.goBack() : navigation.navigate("Home")} />
+      <BrandHero inset title="Prontuário" subtitle="Seu histórico, mais claro. Tudo sobre seu cuidado em um só lugar." onBack={() => navigation.canGoBack() ? navigation.goBack() : navigation.navigate("Home")} />
       <TouchableOpacity accessibilityRole="button" accessibilityLabel="Atualizar prontuário" onPress={() => setRevision(value => value + 1)} style={[styles.heading, { alignSelf: "flex-end" }]}><MaterialCommunityIcons name="refresh" size={20} color={colors.primary} /><Text style={styles.personName}>Atualizar registros</Text></TouchableOpacity>
       <View style={styles.people}>
         {people.map(person => <TouchableOpacity accessibilityRole="button" accessibilityState={{ selected: person.id === personId }} key={person.id} onPress={() => selectPerson(person.id)} style={[styles.person, person.id === personId && styles.personActive]}><MaterialCommunityIcons name="account-circle-outline" size={24} color={person.id === personId ? colors.white : colors.primary} /><View><Text style={[styles.personName, person.id === personId && styles.white]}>{person.id === "self" ? "Você" : person.name}</Text><Text style={[styles.personMeta, person.id === personId && styles.white]}>{person.id === "self" ? "Titular" : "Familiar"}</Text></View></TouchableOpacity>)}

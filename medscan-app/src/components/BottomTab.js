@@ -11,7 +11,7 @@ const tabs = [
   { route: "Home", label: "Início", icon: "home-outline", activeIcon: "home" },
   { route: "History", label: "Prontuário", icon: "file-document-outline", activeIcon: "file-document" },
   { route: "Monitoring", label: "Monitorar", icon: "heart-pulse" },
-  { route: "Profile", label: "Perfil", icon: "account-outline", activeIcon: "account" }
+  { route: "Profile", label: "Perfil", icon: "account-outline" }
 ];
 
 export default function BottomTab({ navigation, active = "Home" }) {
@@ -25,7 +25,7 @@ export default function BottomTab({ navigation, active = "Home" }) {
     <View style={styles.sidebarFoot}><MaterialCommunityIcons name="heart-outline" size={20} color={colors.primary} /><Text style={styles.footText}>{"Seu cuidado,\nmais perto."}</Text></View>
   </View>;
   return (
-    <View style={[styles.shell, { bottom: Math.max(insets.bottom, 12) }]}>
+    <View style={[styles.shell, isDark && styles.darkShell, { bottom: Math.max(insets.bottom, 12) }]}>
       {tabs.map((tab) => {
         const isActive = active === tab.route;
         return (
@@ -41,7 +41,7 @@ export default function BottomTab({ navigation, active = "Home" }) {
             style={[styles.item, isActive && styles.activeItem]}
           >
             <MaterialCommunityIcons
-              name={isActive ? tab.activeIcon || tab.icon : tab.icon}
+              name={tab.route === "Home" ? "home" : isActive ? tab.activeIcon || tab.icon : tab.icon}
               size={isActive ? 26 : 24}
               color={isActive ? colors.primary : isDark ? "#B9C9C5" : colors.textMuted}
             />
@@ -75,7 +75,7 @@ const createStyles = (colors) => StyleSheet.create({
     maxWidth: 480,
     alignSelf: "center",
     minHeight: 76,
-    borderRadius: 28,
+    borderRadius: 42,
     backgroundColor: colors.surface,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -90,13 +90,14 @@ const createStyles = (colors) => StyleSheet.create({
     shadowRadius: 24,
     elevation: 8
   },
+  darkShell: { backgroundColor: "#171D1F", borderColor: "#293538" },
   item: {
     flex: 1,
     minHeight: 62,
     alignItems: "center",
     justifyContent: "center",
     gap: 3,
-    borderRadius: 22,
+    borderRadius: 32,
     minWidth: 0
   },
   activeItem: { backgroundColor: colors.selectedSurface },

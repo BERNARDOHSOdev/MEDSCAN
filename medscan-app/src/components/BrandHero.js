@@ -8,12 +8,12 @@ import { LinearGradient } from "expo-linear-gradient";
 import { HeaderArtwork } from "./HomeArtwork";
 import MedscanWordmark from "./MedscanWordmark";
 
-export default function BrandHero({ title, subtitle, badge, onBack, onNotifications, desktop = false }) {
+export default function BrandHero({ title, subtitle, badge, onBack, onNotifications, desktop = false, inset = false }) {
   const { colors, styles, isDark } = useAppTheme(createStyles);
   const wide = useDesktop();
   return (
-    <LinearGradient colors={[colors.heroStart, colors.heroEnd]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.hero, wide && { borderRadius: 28, padding: 32 }, desktop && styles.desktopHero]}>
-      <HeaderArtwork dark={isDark} />
+    <LinearGradient colors={[colors.heroStart, colors.heroEnd]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.hero, inset && styles.insetHero, wide && { borderRadius: 28, padding: 32 }, desktop && styles.desktopHero]}>
+      <HeaderArtwork dark={isDark} compact={inset && !wide} />
       <View style={styles.brandRow}>
         <View style={styles.brand}>
           {onBack ? <TouchableOpacity accessibilityRole="button" accessibilityLabel="Voltar" onPress={onBack} style={styles.brandIcon}><MaterialCommunityIcons name="arrow-left" size={21} color="white" /></TouchableOpacity> : <View style={styles.brandIcon}><MaterialCommunityIcons name="pulse" size={21} color="white" /></View>}
@@ -33,6 +33,7 @@ const createStyles = (colors) => StyleSheet.create({
   desktopTitle: { fontSize: 42, lineHeight: 48, letterSpacing: -1.4 },
   desktopSubtitle: { fontSize: 16, lineHeight: 25, marginTop: 16 },
   hero: { backgroundColor: colors.hero, padding: 24, paddingTop: 22, paddingBottom: 28, borderBottomLeftRadius: 32, borderBottomRightRadius: 32, overflow: "hidden" },
+  insetHero: { borderRadius: 28 },
   halo: { position: "absolute", width: 240, height: 240, borderRadius: 120, borderWidth: 25, borderColor: "#ffffff06", backgroundColor: colors.heroHalo, right: -85, bottom: -120 },
   innerHalo: { position: "absolute", width: 180, height: 180, borderRadius: 90, borderWidth: 1, borderColor: "#ffffff18", right: -55, bottom: -90 },
   brandRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 28 },
