@@ -2,6 +2,8 @@
 
 > Documento de trabalho para reunir as conversas e ideias selecionadas por Bernardo. Só entram conteúdos cuja inclusão ele solicitar. As ideias podem ser reorganizadas, combinadas ou substituídas para manter a apresentação coerente, preservando as decisões e preferências expressas por ele.
 
+> **Tempo confirmado:** até 15 minutos. A versão atual possui falas divididas entre Arthur, Bernardo e Henrique, com demonstração em `output/ROTEIRO-APRESENTACAO-15-MIN.md`. O roteiro foi planejado para terminar em 13 minutos e 30 segundos, preservando 1 minuto e 30 segundos de margem.
+
 ## 1. O que queremos alcançar
 
 A apresentação deve mostrar o MEDSCAN funcionando e fazer o público entender por que ele seria útil na própria vida. Queremos despertar interesse, demonstrar a capacidade do grupo e transmitir uma proposta clara de continuidade do cuidado.
@@ -100,6 +102,16 @@ O sensor cardíaco por USB pode ser um destaque adicional, caso esteja implement
 
 Se for usado, ensaiar a medição e manter uma gravação de apoio. Os valores demonstrativos atuais do painel não devem ser apresentados como medições reais.
 
+### Como apresentar o monitoramento sem sensores
+
+O módulo de monitoramento deve ser apresentado como uma experiência funcional de organização e acompanhamento, com dados manuais e demonstrativos. A integração com dispositivos físicos ainda não está ativa porque depende de hardware, protocolos e validação próprios.
+
+Sugestão de fala:
+
+> O MEDSCAN já possui o módulo de monitoramento preparado para receber dados de dispositivos. Nesta versão demonstrativa, usamos dados simulados e registros manuais porque a integração com hardware exige dispositivos homologados, protocolos específicos e validação de segurança. Preferimos deixar essa limitação explícita a apresentar medições fictícias como se fossem reais.
+
+Em seguida, mostrar o que já funciona: cadastro de pessoas acompanhadas, histórico de medições, gráficos, organização dos dados e identificação da origem como manual, simulação ou sensor. A integração com sensores deve ser apresentada como próxima etapa, sem prometer que já está disponível.
+
 ## 7. Estrutura provisória da fala
 
 Referência inicial para uma apresentação de aproximadamente sete minutos. A duração real ainda precisa ser confirmada.
@@ -140,8 +152,8 @@ Na apresentação, primeiro demonstrar utilidade e impacto. O modelo de negócio
 
 ## 11. Materiais a preparar
 
-- [ ] Confirmar o tempo da apresentação e quem vai falar.
-- [ ] Elaborar o roteiro falado e distribuir as participações.
+- [x] Confirmar o tempo da apresentação: até 15 minutos.
+- [x] Elaborar a primeira versão do roteiro falado e distribuir as participações.
 - [ ] Criar slides com pouco texto e imagens do sistema.
 - [ ] Preparar os registros fictícios e ensaiar a jornada da demonstração.
 - [ ] Definir um plano reserva para falhas de internet, hospedagem ou IA.
