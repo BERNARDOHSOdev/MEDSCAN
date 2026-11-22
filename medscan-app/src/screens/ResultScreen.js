@@ -1,7 +1,7 @@
 import { useAppTheme } from "../context/ThemeContext";
 import { useDesktop, desktopPage, desktopContent } from "../utils/responsive";
 import React, { useEffect, useState, useRef } from "react";
-import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, Linking, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import BottomTab from "../components/BottomTab";
@@ -44,7 +44,20 @@ export default function ResultScreen({ navigation, route }) {
   const desktop = useDesktop();
   const scrollRef = useRef(null);
   const analysis = route.params?.analysis;
-  const { user } = useAuth();
+  const { user, token } = useAuth();
+  const [protectedImage, setProtectedImage] = useState(null);
+  const [attachmentError, setAttachmentError] = useState("");
+  const attachmentPath = /^\/uploads\/[a-zA-Z0-9-]+\.(?:png|jpg|jpeg|webp)$/i.test(analysis?.imageUrl || "") ? analysis.imageUrl : null;
+  useEffect(() => {
+    setAttachmentError("");
+    if (Platform.OS !== "web" || !attachmentPath || !token) { setProtectedImage(null); return; }
+    let active = true, objectUrl;
+    setProtectedImage(null);
+    api.get(`${API_ORIGIN}${attachmentPath}`, { responseType: "blob" }).then(({ data }) => {
+      if (active) { objectUrl = URL.createObjectURL(data); setProtectedImage(objectUrl); }
+    }).catch(() => { if (active) setAttachmentError("O anexo não está disponível. Isso pode acontecer depois que o serviço é reiniciado; a orientação desta análise continua salva."); });
+    return () => { active = false; if (objectUrl) URL.revokeObjectURL(objectUrl); };
+  }, [attachmentPath, token]);
   const owner = user?._id || user?.id;
   const draft = useAnalysisDraft(owner && analysis?._id ? `complement:${owner}:${analysis._id}` : null, { addition: "", status: "editing" });
   const addition = draft.value.addition;
@@ -105,7 +118,8 @@ export default function ResultScreen({ navigation, route }) {
   const isLocal = source.startsWith("local-fallback") || String(analysis._id || "").startsWith("mock");
   const risk = analysis.riskLevel || result.riskLevel || "Indeterminado";
   const urgent = !isLocal && risk === "Alto";
-  const imageUri = route.params?.imageUri || (analysis.imageUrl ? (analysis.imageUrl.startsWith("http") ? analysis.imageUrl : `${API_ORIGIN}${analysis.imageUrl}`) : null);
+  const imageUri = route.params?.imageUri || (attachmentPath ? (Platform.OS === "web" ? protectedImage : `${API_ORIGIN}${attachmentPath}`) : null);
+  const imageSource = imageUri ? { uri: imageUri, ...(Platform.OS !== "web" && !route.params?.imageUri && token ? { headers: { Authorization: `Bearer ${token}` } } : {}) } : null;
   const questions = report.questionsForClinician || [];
   return (
     <SafeAreaView style={[styles.safe, desktop && desktopPage]}>
@@ -127,7 +141,8 @@ export default function ResultScreen({ navigation, route }) {
         <Button title="Resumo para levar à consulta" icon="file-document-outline" variant="outline" onPress={() => navigation.navigate("ConsultationSummary", { analysisId: analysis._id, personId: analysis.monitoredPersonId || "self" })} />
         <CaseTimeline key={String(analysis._id)} versions={versions} selectedId={analysis._id} loading={timelineLoading} error={timelineError} onRetry={() => setTimelineRevision(value => value + 1)} disabled={saving} onSelect={version => navigation.setParams({ analysis: version, caseVersions: versions, imageUri: null })} />
         {analysis.symptoms ? <Section title="O que você contou" icon="message-text-outline" text={analysis.symptoms} /> : null}
-        {imageUri ? <Image accessibilityLabel="Imagem enviada para análise" source={{ uri: imageUri }} style={styles.image} resizeMode="contain" /> : null}
+        {imageSource ? <Image accessibilityLabel="Imagem enviada para análise" source={imageSource} style={styles.image} resizeMode="contain" onError={() => setAttachmentError("O anexo não está disponível. Isso pode acontecer depois que o serviço é reiniciado; a orientação desta análise continua salva.")} /> : null}
+        {attachmentError && !route.params?.imageUri ? <Text accessibilityRole="alert" style={styles.formError}>{attachmentError}</Text> : null}
         <Section title="Entendendo o seu relato" icon="text-box-outline" text={report.summary} />
         <Section title="O que isso pode significar" icon="lightbulb-outline" text={result.details || analysis.details} />
         <Section title="Pontos relevantes" icon="clipboard-check-outline" items={report.relevantFindings} />

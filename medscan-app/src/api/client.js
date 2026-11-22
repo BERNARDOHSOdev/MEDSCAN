@@ -63,10 +63,13 @@ function getDefaultApiUrl() {
 
 export const API_URL = getEnvApiUrl() || getDefaultApiUrl();
 export const API_ORIGIN = API_URL.replace(/\/api\/?$/, "");
+export const USE_COOKIE_AUTH = Platform.OS === "web" && process.env.EXPO_PUBLIC_COOKIE_AUTH === "true";
 
 const api = axios.create({
   baseURL: API_URL,
-  timeout: 30000
+  timeout: 30000,
+  withCredentials: USE_COOKIE_AUTH,
+  ...(USE_COOKIE_AUTH ? { headers: { "X-Medscan-Session": "cookie" } } : {})
 });
 
 export function setAuthToken(token) {
@@ -76,5 +79,13 @@ export function setAuthToken(token) {
     delete api.defaults.headers.common.Authorization;
   }
 }
+
+// withCredentials=false alone does not suppress same-origin cookies.
+api.interceptors.request.use(config => {
+  if (USE_COOKIE_AUTH && !api.defaults.withCredentials && config.url !== "/auth/logout") {
+    throw new Error("Entre novamente para acessar seus registros.");
+  }
+  return config;
+});
 
 export default api;

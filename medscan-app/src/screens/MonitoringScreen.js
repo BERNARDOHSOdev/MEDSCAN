@@ -1,8 +1,7 @@
 import { useAppTheme } from "../context/ThemeContext";
 import { useDesktop, desktopPage, desktopContent } from "../utils/responsive";
-import React, { useCallback, useEffect, useState } from "react";
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
+import React from "react";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -11,97 +10,23 @@ import Card from "../components/Card";
 import DeviceCard from "../components/DeviceCard";
 import HealthCard from "../components/HealthCard";
 import { HeaderArtwork } from "../components/HomeArtwork";
-import api from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { fontFamily, radius, shadows } from "../constants/theme";
 import MedscanWordmark from "../components/MedscanWordmark";
-import {
-  DEFAULT_MONITORED_PERSON_ID,
-  MONITORED_PERSON_STORAGE_KEY,
-  getMonitoredPeople,
-  findMonitoredPerson,
-} from "../utils/monitoredPeople";
-import { mockDevices } from "../utils/mockData";
+import { findMonitoredPerson } from "../utils/monitoredPeople";
 import { demoVitals } from "../utils/demoVitals";
-import { getStoredItem, setStoredItem } from "../utils/storage";
+import useMonitoringData from "../utils/useMonitoringData";
 
 export default function MonitoringScreen({ navigation }) {
   const { colors, styles, isDark } = useAppTheme(createStyles);
   const desktop = useDesktop();
   const { user } = useAuth();
-  const [monitoring, setMonitoring] = useState({ vitals: {}, alerts: [] });
-  const [devices, setDevices] = useState(mockDevices);
-  const [people, setPeople] = useState(() => getMonitoredPeople(user));
-  const [selectedPersonId, setSelectedPersonId] = useState(DEFAULT_MONITORED_PERSON_ID);
-  const [showPeopleMenu, setShowPeopleMenu] = useState(false);
-
-  useFocusEffect(
-    useCallback(() => {
-      let mounted = true;
-
-      async function load() {
-        try {
-          const [profileResponse, monitoringResponse, devicesResponse] = await Promise.all([
-            api.get("/profile"),
-            api.get(`/monitoring?personId=${selectedPersonId}`),
-            api.get("/devices")
-          ]);
-
-          if (mounted) {
-            const profile = profileResponse.data.profile || {};
-            const loadedPeople = getMonitoredPeople(profileResponse.data.user || user, profile.relatives || []);
-            setPeople(loadedPeople);
-            if (!loadedPeople.some((person) => person.id === selectedPersonId)) {
-              setSelectedPersonId(DEFAULT_MONITORED_PERSON_ID);
-              await setStoredItem(MONITORED_PERSON_STORAGE_KEY, DEFAULT_MONITORED_PERSON_ID);
-            }
-            setMonitoring(monitoringResponse.data);
-            setDevices(devicesResponse.data.length ? devicesResponse.data : mockDevices);
-          }
-        } catch (error) {
-          if (mounted) {
-            setMonitoring({ vitals: {}, alerts: [] });
-            setDevices(mockDevices);
-          }
-        }
-      }
-
-      load();
-
-      return () => {
-        mounted = false;
-      };
-    }, [selectedPersonId, user])
-  );
-
-  useEffect(() => {
-    let mounted = true;
-
-    async function restoreSelectedPerson() {
-      const storedPersonId = await getStoredItem(MONITORED_PERSON_STORAGE_KEY);
-
-      if (mounted && storedPersonId) {
-        setSelectedPersonId(storedPersonId);
-      }
-    }
-
-    restoreSelectedPerson();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const { monitoring, devices, devicesError, people, selectedPersonId, showPeopleMenu, setShowPeopleMenu, selectPerson } = useMonitoringData(user);
 
   const selectedPerson = findMonitoredPerson(selectedPersonId, people);
   const vitals = monitoring.vitals || {};
   const alerts = monitoring.alerts || [];
   const hasDemoVitals = ["heartRate", "glucose", "bloodPressure", "sleep"].some(key => vitals[key] == null);
-
-  async function selectPerson(personId) {
-    setSelectedPersonId(personId);
-    setShowPeopleMenu(false);
-    await setStoredItem(MONITORED_PERSON_STORAGE_KEY, personId);
-  }
 
   return (
     <SafeAreaView style={[styles.safe, desktop && desktopPage]}>
@@ -146,7 +71,7 @@ export default function MonitoringScreen({ navigation }) {
               </View>
             </View>
             <View style={styles.personActions}>
-              <TouchableOpacity style={styles.profileButton} activeOpacity={0.84}>
+              <TouchableOpacity style={styles.profileButton} activeOpacity={0.84} onPress={() => navigation.navigate("Profile")} accessibilityRole="button">
                 <MaterialCommunityIcons name="account-outline" size={18} color={colors.primary} />
                 <Text style={styles.profileButtonText}>Ver perfil</Text>
               </TouchableOpacity>
@@ -218,7 +143,7 @@ export default function MonitoringScreen({ navigation }) {
           <TouchableOpacity
             style={styles.measureAction}
             activeOpacity={0.86}
-            onPress={() => Alert.alert("Medicao", "Cadastro manual de sinais vitais pronto para expansao.")}
+            onPress={() => navigation.navigate("History", { personId: selectedPersonId, openMeasurement: true, revision: Date.now() })}
           >
             <MaterialCommunityIcons name="plus" size={19} color={colors.primary} />
             <Text style={styles.measureActionText}>Registrar medição</Text>
@@ -270,9 +195,8 @@ export default function MonitoringScreen({ navigation }) {
         <View style={styles.sectionHeader}>
           <View style={styles.sectionTitleRow}>
             <MaterialCommunityIcons name="devices" size={24} color={colors.primary} />
-            <Text style={styles.sectionTitle}>Dispositivos conectados</Text>
+            <Text style={styles.sectionTitle}>Dispositivos</Text>
           </View>
-          <Text style={styles.link}>Gerenciar</Text>
         </View>
 
         <View style={styles.grid}>
@@ -280,21 +204,7 @@ export default function MonitoringScreen({ navigation }) {
             <DeviceCard key={device._id || device.name} device={device} />
           ))}
         </View>
-
-        <TouchableOpacity
-          style={styles.addDevice}
-          activeOpacity={0.86}
-          onPress={() => Alert.alert("Dispositivo", "Fluxo preparado para conectar novo aparelho de saude.")}
-        >
-          <View style={styles.addIcon}>
-            <MaterialCommunityIcons name="plus" size={34} color={colors.primary} />
-          </View>
-          <View style={styles.addCopy}>
-            <Text style={styles.addTitle}>Adicionar dispositivo</Text>
-            <Text style={styles.addSubtitle}>Conecte um novo aparelho de saude</Text>
-          </View>
-          <MaterialCommunityIcons name="chevron-right" size={28} color={colors.primary} />
-        </TouchableOpacity>
+        <Text style={styles.addSubtitle}>{devicesError || (devices.length ? "A conexão e a bateria destes dispositivos não são verificadas pelo aplicativo." : "Nenhum dispositivo cadastrado. A conexão automática ainda não está disponível.")}</Text>
 
         </View>
       </ScrollView>

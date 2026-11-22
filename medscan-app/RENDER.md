@@ -16,6 +16,14 @@ EXPO_PUBLIC_API_URL=https://medscan-api-f658.onrender.com/api
 
 As chaves das IAs, MongoDB e JWT pertencem ao Environment do **medscan-api**, no projeto **My Project**. Nunca coloque esses segredos no Static Site ou em variáveis EXPO_PUBLIC.
 
+Configure `JWT_SECRET` com um valor aleatório forte e igual em todas as instâncias: a API não inicia sem ele. O limite de autenticação usa contadores compartilhados no MongoDB, que precisa permitir criar um índice TTL na coleção `auth_rate_limits`; se o contador estiver indisponível, login e cadastro retornam 503. Se a API só receber conexões através de exatamente um proxy confiável, defina `TRUST_PROXY=1` para limitar por endereço do cliente; não ative essa opção se conexões diretas forem possíveis. O limite usa janelas fixas e depende dos relógios das instâncias estarem sincronizados.
+
+Para ativar sessões web com cookie `HttpOnly`, configure na API `SESSION_ALLOWED_ORIGINS` com as origens HTTPS exatas do site (separadas por vírgula e sem barra final) e, no build do site, `EXPO_PUBLIC_COOKIE_AUTH=true`. API e site precisam usar HTTPS. A API aceita cookies apenas nas origens configuradas e exige cabeçalho próprio e origem autorizada em operações de escrita. Teste login, atualização da página, envio de formulário, visualização de anexo e saída em cada navegador: com site e API em domínios diferentes, bloqueio de cookies de terceiros pode impedir a sessão. Com a opção desligada, o token permanece apenas em memória e é necessário entrar novamente ao recarregar. Aplicativos nativos continuam usando token em memória.
+
+Anexos criados antes da proteção de propriedade não têm a nova marca de autorização e deixam de estar acessíveis após a atualização. Para recuperá-los, primeiro confirme a origem e o proprietário de cada arquivo e prepare uma migração controlada; não atribua propriedade automaticamente a URLs antigas fornecidas por clientes.
+
+Na API, `npm run audit:legacy-uploads` lista referências antigas, conflitos de proprietário e presença dos arquivos no disco local, sem modificar o banco nem os arquivos. Execute no ambiente que contém os uploads; o relatório contém identificadores de contas e deve ser tratado como dado privado. Mesmo uma referência sem conflito não comprova propriedade.
+
 Em Redirects/Rewrites, adicione uma regra:
 
 | Source | Destination | Action |

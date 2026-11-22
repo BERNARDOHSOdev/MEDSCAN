@@ -27,12 +27,8 @@ export default function DeviceCard({ device }) {
         <Text style={styles.name} numberOfLines={1}>{device.name}</Text>
       </View>
       <View style={styles.statusBadge}>
-        <View style={[styles.dot, !device.connected && styles.dotOff]} />
-        <Text style={[styles.connected, !device.connected && styles.connectedOff]}>{device.connected ? "Conectado" : "Offline"}</Text>
-      </View>
-      <View style={styles.row}>
-        <MaterialCommunityIcons name="battery-medium" size={18} color={colors.textMuted} />
-        <Text style={styles.battery}>{device.battery || 0}%</Text>
+        <View style={[styles.dot, styles.dotOff]} />
+        <Text style={[styles.connected, styles.connectedOff]}>Conexão não verificada</Text>
       </View>
     </View>
   );

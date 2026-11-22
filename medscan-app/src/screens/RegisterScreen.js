@@ -7,6 +7,7 @@ import AuthLayout from "../components/AuthLayout";
 import { validateRegistration } from "../utils/authValidation";
 import { useAuth } from "../context/AuthContext";
 import { fontFamily } from "../constants/theme";
+import { USE_COOKIE_AUTH } from "../api/client";
 
 export default function RegisterScreen({ navigation }) {
   const { register, loading } = useAuth();
@@ -85,6 +86,7 @@ export default function RegisterScreen({ navigation }) {
             />
           {errorMessage ? <Text accessibilityRole="alert" style={styles.error}>{errorMessage}</Text> : null}
           {loading ? <Text style={{ color: colors.textMuted, fontFamily, fontSize: 13, lineHeight: 20 }}>Conectando com segurança. O primeiro acesso pode levar até um minuto.</Text> : null}
+            {!USE_COOKIE_AUTH ? <Text style={styles.linkHint}>Por segurança, entre novamente ao recarregar ou fechar o aplicativo.</Text> : null}
             <AuthButton title="Criar minha conta" style={styles.submit} onPress={handleRegister} loading={loading} />
           </View>
 

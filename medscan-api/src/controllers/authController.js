@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const Profile = require("../models/Profile");
 const createToken = require("../utils/createToken");
+const { sendSession, wantsCookie, isTrustedBrowserRequest } = require("../utils/browserSession");
 
 function sanitizeUser(user) {
   return {
@@ -15,6 +16,7 @@ function sanitizeUser(user) {
 
 async function register(req, res, next) {
   try {
+    if (wantsCookie(req) && !isTrustedBrowserRequest(req)) return res.status(403).json({ message: "Origem não autorizada para sessão no navegador." });
     const { age, password } = req.body;
     const name = typeof req.body.name === "string" ? req.body.name.trim() : "";
     const email = typeof req.body.email === "string" ? req.body.email.trim().toLowerCase() : "";
@@ -45,10 +47,7 @@ async function register(req, res, next) {
 
     await Profile.create({ userId: user._id });
 
-    return res.status(201).json({
-      user: sanitizeUser(user),
-      token: createToken(user._id)
-    });
+    return sendSession(req, res, sanitizeUser(user), createToken(user._id), 201);
   } catch (error) {
     if (error.code === 11000) return res.status(409).json({ message: "Este e-mail já está cadastrado." });
     next(error);
@@ -57,6 +56,7 @@ async function register(req, res, next) {
 
 async function login(req, res, next) {
   try {
+    if (wantsCookie(req) && !isTrustedBrowserRequest(req)) return res.status(403).json({ message: "Origem não autorizada para sessão no navegador." });
     const { password } = req.body;
     const email = typeof req.body.email === "string" ? req.body.email.trim().toLowerCase() : "";
 
@@ -74,10 +74,7 @@ async function login(req, res, next) {
       return res.status(401).json({ message: "Credenciais inválidas." });
     }
 
-    return res.json({
-      user: sanitizeUser(user),
-      token: createToken(user._id)
-    });
+    return sendSession(req, res, sanitizeUser(user), createToken(user._id));
   } catch (error) {
     next(error);
   }

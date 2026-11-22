@@ -1,13 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState, useRef } from "react";
-import { ActivityIndicator, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useMemo, useState, useRef } from "react";
+import { ActivityIndicator, Alert, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useFocusEffect } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAppTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { useDesktop, desktopPage, desktopContent } from "../utils/responsive";
-import { getMonitoredPeople } from "../utils/monitoredPeople";
-import { careKinds, careRoutes, careStatuses, careTimeline, localDate, inputDate, displayDate } from "../utils/careRecords";
+import useCareData from "../utils/useCareData";
+import { careKinds, careRoutes, careStatuses, careTimeline, displayDate, careFormStatuses, createCareForm, careFormPayload } from "../utils/careRecords";
 import { timelineDate } from "../utils/caseTimeline";
 import { fontFamily } from "../constants/theme";
 import api from "../api/client";
@@ -25,8 +24,6 @@ import AppointmentNotes from "../components/AppointmentNotes";
 
 const sectionDescriptions = { medication: "Sua rotina de medicamentos, doses e horários.", allergy: "Substâncias e reações que merecem atenção.", vaccine: "Sua carteira pessoal, organizada e fácil de acompanhar.", appointment: "Seus próximos encontros de cuidado.", timeline: "Seu histórico de cuidado em ordem cronológica.", chart: "Acompanhe a evolução das suas medições." };
 const sections = { timeline:{ title:"Linha do tempo",icon:"timeline-clock-outline" }, ...careKinds, chart:{ title:"Gráfico",icon:"chart-line" } };
-const statuses = { medication:["active","paused"],allergy:["active","inactive"],vaccine:["administered","planned"],appointment:["scheduled","completed","cancelled"] };
-const emptyForm = kind => ({ kind,name:"",dose:"",times:"08:00",startDate:"",endDate:"",date:"",time:"",nextDate:"",location:"",reaction:"",severity:"",lot:"",notes:"",professional:"",questions:"",documents:"",instructions:"",status:statuses[kind]?.[0] });
 export default function CareScreen({ navigation, route }) {
   const { colors, styles } = useAppTheme(createStyles), desktop = useDesktop(), { user, token } = useAuth();
   const routeSection=Object.entries(careRoutes).find(([,name])=>name===route.name)?.[0] || (sections[route.params?.section] ? route.params.section : "timeline");
@@ -34,30 +31,14 @@ export default function CareScreen({ navigation, route }) {
   const [showPeople,setShowPeople]=useState(false), [showAllRecords,setShowAllRecords]=useState(false);
   const [search,setSearch]=useState("");
   const openedRecord = useRef("");
+  const initialForm = useRef(null);
   const scope = `${user?._id || user?.id || "guest"}:${personId}`;
   const scopeRef = useRef(scope); scopeRef.current = scope;
   useEffect(()=>{setForm(null);setActionError("");},[scope]);
-  const [people,setPeople]=useState(()=>getMonitoredPeople(user)), [records,setRecords]=useState([]), [doses,setDoses]=useState([]), [analyses,setAnalyses]=useState([]), [measurements,setMeasurements]=useState([]);
-  const [loading,setLoading]=useState(false), [errors,setErrors]=useState({}), [revision,setRevision]=useState(0), [showArchived,setShowArchived]=useState(false), [filter,setFilter]=useState("all"), [visible,setVisible]=useState(30);
+  const [revision,setRevision]=useState(0), [showArchived,setShowArchived]=useState(false), [filter,setFilter]=useState("all"), [visible,setVisible]=useState(30);
   const [form,setForm]=useState(null), [formError,setFormError]=useState(""), [saving,setSaving]=useState(false), [actionError,setActionError]=useState(""), [busy,setBusy]=useState("");
   useEffect(()=>{setSection(routeSection);setPersonId(route.params?.personId || "self");setShowArchived(false);setShowPeople(false);},[routeSection,route.params?.personId,route.params?.revision]);
-  useFocusEffect(useCallback(()=>{
-    let active=true;setRecords([]);setDoses([]);setAnalyses([]);setMeasurements([]);setErrors({});setActionError("");setVisible(30);
-    if (!token || !user) {setLoading(false);return;}
-    setLoading(true);
-    Promise.allSettled([api.get("/profile"),api.get(`/care?personId=${encodeURIComponent(personId)}`),section === "timeline" ? api.get(`/history?personId=${encodeURIComponent(personId)}`) : Promise.resolve({data:[]}),["timeline","chart"].includes(section) ? api.get(`/monitoring/history?personId=${encodeURIComponent(personId)}`) : Promise.resolve({data:{records:[]}})]).then(results=>{
-      if(!active)return;
-      const issues={};
-      if(results[0].status==="fulfilled"){
-        const data=results[0].value.data, loaded=getMonitoredPeople(data.user || user,data.profile?.relatives || []);setPeople(loaded);
-        if(!loaded.some(person=>person.id===personId)){setPersonId("self");return;}
-      }else issues.profile="Não foi possível carregar a lista de pessoas.";
-      if(results[1].status==="fulfilled" && Array.isArray(results[1].value.data.records) && Array.isArray(results[1].value.data.doses)){setRecords(results[1].value.data.records);setDoses(results[1].value.data.doses);}else issues.care="Não foi possível carregar os registros desta seção. Atualize e tente novamente.";
-      if(results[2].status==="fulfilled" && Array.isArray(results[2].value.data))setAnalyses(results[2].value.data);else issues.analyses="Análises indisponíveis na linha do tempo.";
-      if(results[3].status==="fulfilled" && Array.isArray(results[3].value.data.records))setMeasurements(results[3].value.data.records);else issues.measurements="Medições indisponíveis. Não foi possível montar o gráfico completo.";
-      setErrors(issues);setLoading(false);
-    }).catch(()=>{if(active){setErrors({care:"Não foi possível carregar o prontuário. Tente novamente."});setLoading(false);}});return()=>{active=false;};
-  },[user,token,personId,revision,section]));
+  const { people, records, setRecords, doses, setDoses, analyses, measurements, loading, errors } = useCareData({ user, token, personId, setPersonId, section, revision, setActionError, setVisible });
   const title=sections[section]?.title || "Prontuário", selectedName=people.find(person=>person.id===personId)?.name || "Pessoa selecionada";
   const scheduledSection=["medication","appointment"].includes(section);
   useEffect(()=>{setSearch("");},[scope,section]);
@@ -69,13 +50,18 @@ export default function CareScreen({ navigation, route }) {
   const listed=records.filter(record=>record.kind===section && Boolean(record.archived)===showArchived && matchesRecord(record,search)).sort((a,b)=>String(b.date || b.createdAt || "").localeCompare(String(a.date || a.createdAt || "")));
   const events=useMemo(()=>careTimeline(analyses,measurements,records,doses),[analyses,measurements,records,doses]).filter(event=>(filter==="all" || event.kind===filter) && matchesRecord({...event,...(event.analysis || event.record || {}),name:event.title,notes:[event.record?.notes,event.detail].filter(Boolean).join(" ")},search));
   function chip(label,selected,onPress,key=label){return <TouchableOpacity key={key} accessibilityRole="button" accessibilityState={{selected}} onPress={onPress} style={[styles.chip,selected && styles.chipActive]}><Text style={{color:selected?"white":colors.text,fontFamily,fontSize:12}}>{label}</Text></TouchableOpacity>;}
-  function edit(record){setFormError("");setForm(record?{...emptyForm(record.kind),...record,times:(record.times || []).join(", "),...Object.fromEntries(["date","startDate","endDate","nextDate"].map(key=>[key,record[key]?displayDate(record[key]):""]))}:emptyForm(section));}
+  function edit(record){const nextForm=createCareForm(record?.kind || section, record);initialForm.current=JSON.stringify(nextForm);setFormError("");setForm(nextForm);}
+  function closeForm(){
+    if(saving)return;
+    if(JSON.stringify(form)===initialForm.current){setForm(null);return;}
+    if(Platform.OS==="web") { if(globalThis.confirm("Descartar as alterações não salvas?")) setForm(null); return; }
+    Alert.alert("Descartar alterações?", "As alterações não salvas serão perdidas.", [{text:"Continuar editando",style:"cancel"},{text:"Descartar",style:"destructive",onPress:()=>setForm(null)}]);
+  }
   async function save(){
     if(saving)return;setSaving(true);setFormError("");
     const requestScope=scope;
     try{
-      const payload={...form,monitoredPersonId:personId,...Object.fromEntries(["date","startDate","endDate","nextDate"].map(key=>[key,inputDate(form[key] || "")]))};
-      if(form.kind==="medication")payload.times=form.times.split(",").map(time=>time.trim()).filter(Boolean);
+      const payload=careFormPayload(form,personId);
       const {data}=await (form._id?api.patch(`/care/${form._id}`,payload):api.post("/care",payload));
       if(scopeRef.current!==requestScope)return;
       if(!data?._id)throw new Error("O servidor não confirmou o registro.");
@@ -138,18 +124,18 @@ export default function CareScreen({ navigation, route }) {
     </>}
     </>}
   </ScrollView><BottomTab navigation={navigation} active="History"/>
-  <Modal visible={Boolean(form)} animationType="slide" onRequestClose={()=>!saving && setForm(null)}><SafeAreaView style={styles.safe}><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
-    <Header title={`${form?._id?"Editar":"Adicionar"} ${careKinds[form?.kind]?.singular || "registro"}`} subtitle={selectedName} onBack={()=>!saving && setForm(null)} showBell={false}/>
+  <Modal visible={Boolean(form)} animationType="slide" onRequestClose={closeForm}><SafeAreaView style={styles.safe}><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
+    <Header title={`${form?._id?"Editar":"Adicionar"} ${careKinds[form?.kind]?.singular || "registro"}`} subtitle={selectedName} onBack={closeForm} showBell={false}/>
     {form?<>
       {field("name",form.kind==="allergy"?"Substância ou medicamento":"Nome",form.kind==="appointment"?"Especialidade ou profissional":"Nome do registro")}
       {form.kind==="medication"?<>{field("dose","Dose conforme a prescrição","Ex.: 1 comprimido de 10 mg")}{field("times","Horários diários, separados por vírgula","08:00, 20:00")}{field("startDate","Início (opcional)","DD/MM/AAAA")}{field("endDate","Término (opcional)","DD/MM/AAAA")}<Text style={styles.note}>Copie o esquema prescrito. Para uso eventual ou frequência diferente de diária, registre a orientação nas observações e mantenha a agenda pausada.</Text></>:null}
       {form.kind==="allergy"?<>{field("reaction","Reação relatada","Descreva o que aconteceu",true)}{field("severity","Gravidade informada (opcional)","Conforme orientação recebida")}{field("date","Data em que foi identificada (opcional)","DD/MM/AAAA")}</>:null}
       {form.kind==="vaccine"?<>{field("dose","Dose (opcional)","Ex.: 1ª dose ou reforço")}{field("date","Data recebida ou prevista","DD/MM/AAAA")}{field("nextDate","Próxima dose informada (opcional)","DD/MM/AAAA")}{field("lot","Lote (opcional)","Conforme a carteira")}{field("location","Posto ou clínica (opcional)","Local informado")}</>:null}
       {form.kind==="appointment"?<>{field("professional","Profissional (opcional)","Nome de quem vai atender")}{field("date","Data da consulta","DD/MM/AAAA")}{field("time","Horário","HH:MM")}{field("location","Local ou endereço (opcional)","Clínica, posto ou atendimento online")}<Text style={styles.heading}>Antes da consulta</Text><Text style={styles.note}>Organize o que deseja conversar e levar. Use uma linha para cada item.</Text>{field("questions","Perguntas que quero fazer","Ex.: O que mudou nos meus exames?",true)}{field("documents","Documentos que preciso levar","Ex.: Exames recentes, receitas e documento de identificação",true)}<Text style={styles.heading}>Depois da consulta</Text>{field("instructions","Orientações recebidas","Registre o que o profissional orientou e os próximos passos.",true)}</>:null}
-      <Text style={styles.heading}>Situação</Text><View style={styles.row}>{statuses[form.kind].map(status=>chip(careStatuses[status],form.status===status,()=>!saving && setForm(current=>({...current,status})),status))}</View>
+      <Text style={styles.heading}>Situação</Text><View style={styles.row}>{careFormStatuses[form.kind].map(status=>chip(careStatuses[status],form.status===status,()=>!saving && setForm(current=>({...current,status})),status))}</View>
       {field("notes","Observações (opcional)","Informações que deseja guardar",true)}
       {formError?<Text accessibilityRole="alert" style={styles.error}>{formError}</Text>:null}
-      <Button title="Salvar registro" loading={saving} onPress={save}/><Button title="Cancelar" variant="outline" disabled={saving} onPress={()=>setForm(null)}/>
+      <Button title="Salvar registro" loading={saving} onPress={save}/><Button title="Cancelar" variant="outline" disabled={saving} onPress={closeForm}/>
     </>:null}
   </ScrollView></SafeAreaView></Modal></SafeAreaView>;
 }

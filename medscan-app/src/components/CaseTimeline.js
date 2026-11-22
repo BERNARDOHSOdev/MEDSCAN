@@ -45,7 +45,7 @@ export default function CaseTimeline({ versions, selectedId, onSelect, disabled,
             {entry.parentLabel ? <Text style={s.muted}>{entry.parentLabel}</Text> : null}
             <Text style={s.caption}>{entry.isOriginal ? "Seu relato" : "O que você acrescentou"}</Text>
             <Text selectable style={s.copy}>{entry.input || entry.inputMissing}</Text>
-            {version.imageUrl ? <Text style={s.muted}>Imagem anexada a este registro</Text> : null}
+            {version.imageUrl ? <Text style={s.muted}>Este registro tinha um anexo. Ele pode ficar indisponível depois que o serviço é reiniciado.</Text> : null}
             {!current ? <>
               <Text style={s.caption}>Resumo da orientação</Text>
               <Text selectable style={s.copy}>{entry.summary}</Text>

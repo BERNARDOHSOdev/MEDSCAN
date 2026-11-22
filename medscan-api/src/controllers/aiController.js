@@ -1,6 +1,7 @@
 const Analysis = require("../models/Analysis");
 const { analyzeMedicalData } = require("../services/aiService");
 const { resolveAnalysisContext } = require("../services/analysisContext");
+const fs = require("fs/promises");
 
 async function analyze(req, res, next) {
   try {
@@ -29,6 +30,7 @@ async function analyze(req, res, next) {
       type: analysisType,
       symptoms,
       imageUrl,
+      privateUploadOwner: file ? req.user._id : null,
       result,
       possibleCondition: result.possibleCondition,
       riskLevel: result.riskLevel,
@@ -42,6 +44,7 @@ async function analyze(req, res, next) {
         "Esta análise não substitui uma consulta médica. Em caso de urgência, procure atendimento imediatamente."
     });
   } catch (error) {
+    if (req.file?.path) await fs.unlink(req.file.path).catch(() => {});
     next(error);
   }
 }

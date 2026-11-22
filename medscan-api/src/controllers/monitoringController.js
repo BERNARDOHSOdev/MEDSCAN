@@ -2,13 +2,6 @@ const Monitoring = require("../models/Monitoring");
 const Device = require("../models/Device");
 const Profile = require("../models/Profile");
 
-const defaultDevices = [
-  { name: "Smartwatch", type: "wearable", battery: 85, connected: true },
-  { name: "OxÃ­metro", type: "oximeter", battery: 90, connected: true },
-  { name: "Glicose", type: "glucose", battery: 80, connected: true },
-  { name: "PressÃ£o arterial", type: "blood-pressure", battery: 70, connected: true }
-];
-
 async function getMonitoring(req, res, next) {
   try {
     const personId = req.query.personId || "self";
@@ -63,16 +56,15 @@ async function createMonitoring(req, res, next) {
 
 async function getDevices(req, res, next) {
   try {
-    let devices = await Device.find({ userId: req.user._id }).sort({ name: 1 });
-
-    if (!devices.length) {
-      devices = await Device.insertMany(defaultDevices.map((device) => ({
-        ...device,
-        userId: req.user._id
-      })));
-    }
-
-    return res.json(devices);
+    const devices = await Device.find({ userId: req.user._id }).sort({ name: 1 });
+    // There is no live integration capable of verifying connection or battery.
+    // Old demo records may already exist, so never expose their values as real.
+    return res.json(devices.map(device => ({
+      ...(typeof device.toObject === "function" ? device.toObject() : device),
+      connected: false,
+      battery: null,
+      lastSync: null
+    })));
   } catch (error) {
     next(error);
   }
@@ -84,8 +76,8 @@ async function createDevice(req, res, next) {
       userId: req.user._id,
       name: req.body.name,
       type: req.body.type,
-      battery: req.body.battery || 100,
-      connected: req.body.connected !== false
+      battery: null,
+      connected: false
     });
 
     return res.status(201).json(device);

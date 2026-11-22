@@ -4,6 +4,9 @@
   "description": "API REST do MEDSCAN com Express, MongoDB Atlas, autenticação JWT e análise médica orientativa por IA.",
   "main": "server.js",
   "scripts": {
+    "test": "node --test",
+    "audit:legacy-uploads": "node scripts/audit-legacy-uploads.cjs",
+    "check:mongo-limit": "node scripts/check-mongo-limit.cjs",
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
@@ -21,7 +24,7 @@
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "express": "^4.21.2",
+    "express": "^4.22.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
     "multer": "^1.4.5-lts.1"

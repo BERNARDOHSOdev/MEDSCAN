@@ -48,7 +48,7 @@ async function createHistoryItem(req, res, next) {
       monitoredPersonName: req.body.monitoredPersonName || req.user.name,
       type: req.body.type || "symptoms",
       symptoms: req.body.symptoms || "",
-      imageUrl: req.body.imageUrl || "",
+      imageUrl: "",
       result: req.body.result || {},
       possibleCondition: req.body.possibleCondition || "",
       riskLevel: req.body.riskLevel || "Baixo",

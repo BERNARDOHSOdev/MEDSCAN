@@ -16,8 +16,7 @@ const userSchema = new mongoose.Schema({
   age: {
     type: Number,
     min: 0,
-    max: 120,
-    required: true
+    max: 120
   },
   password: {
     type: String,

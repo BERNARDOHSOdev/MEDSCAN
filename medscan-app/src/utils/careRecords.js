@@ -20,6 +20,18 @@ export function inputDate(value) {
   if (!Number.isFinite(Date.parse(result)) || new Date(result).toISOString().slice(0,10) !== result) throw new Error("Confira a data informada.");
   return result;
 }
+export const careFormStatuses = { medication:["active","paused"],allergy:["active","inactive"],vaccine:["administered","planned"],appointment:["scheduled","completed","cancelled"] };
+const formDateFields = ["date", "startDate", "endDate", "nextDate"];
+export function createCareForm(kind, record) {
+  const empty = { kind, name:"", dose:"", times:"08:00", startDate:"", endDate:"", date:"", time:"", nextDate:"", location:"", reaction:"", severity:"", lot:"", notes:"", professional:"", questions:"", documents:"", instructions:"", status:careFormStatuses[kind]?.[0] };
+  if (!record) return empty;
+  return { ...empty, ...record, times:(record.times || []).join(", "), ...Object.fromEntries(formDateFields.map(key => [key, record[key] ? displayDate(record[key]) : ""])) };
+}
+export function careFormPayload(form, personId) {
+  const payload = { ...form, monitoredPersonId:personId, ...Object.fromEntries(formDateFields.map(key => [key, inputDate(form[key] || "")])) };
+  if (form.kind === "medication") payload.times = form.times.split(",").map(time => time.trim()).filter(Boolean);
+  return payload;
+}
 export const measurementOrigin = record => record.origin === "simulation" || record.source === "simulation" ? "Simulação" : record.origin === "sensor" ? "Sensor" : record.origin === "manual" || record.source === "recorded" ? "Manual" : "Origem não informada";
 export function medicationAgenda(records, doses, date = localDate()) {
   return records.filter(record => record.kind === "medication" && !record.archived && record.status === "active" && (!record.startDate || record.startDate <= date) && (!record.endDate || record.endDate >= date)).flatMap(record => (record.times || []).map(time => ({ record, time, date, taken: doses.find(dose => String(dose.medicationId) === String(record._id) && dose.date === date && dose.time === time) }))).sort((a,b) => a.time.localeCompare(b.time) || a.record.name.localeCompare(b.record.name));

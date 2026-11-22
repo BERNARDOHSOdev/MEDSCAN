@@ -31,6 +31,8 @@ const analysisSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+  // Set only by the upload controller, never from client-supplied history data.
+  privateUploadOwner: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
   result: {
     type: Object,
     default: {}

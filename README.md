@@ -55,7 +55,7 @@ Usuário revisa as informações antes de falar com um profissional
 
 ## 🌿 Funcionalidades do Sistema
 
-- Cadastro, login e manutenção de sessão do usuário.
+- Cadastro e login; a sessão fica em memória ou, quando configurado para web, em cookie protegido.
 - Perfil pessoal e cadastro de familiares ou pessoas acompanhadas.
 - Relato de sintomas com duração, intensidade e contexto adicional.
 - Envio de imagem de exame ou documento para análise orientativa por IA.

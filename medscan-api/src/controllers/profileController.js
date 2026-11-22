@@ -27,8 +27,8 @@ async function updateProfile(req, res, next) {
   try {
     const { name, email, age, verified, relatives, settings } = req.body;
 
-    const numericAge = age === undefined || age === "" ? undefined : Number(age);
-    if (numericAge !== undefined && (!Number.isInteger(numericAge) || numericAge < 0 || numericAge > 120)) {
+    const numericAge = age === null ? null : age === undefined || age === "" ? undefined : Number(age);
+    if (numericAge !== undefined && numericAge !== null && (!Number.isInteger(numericAge) || numericAge < 0 || numericAge > 120)) {
       return res.status(400).json({ message: "Informe uma idade válida entre 0 e 120 anos." });
     }
 

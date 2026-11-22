@@ -71,7 +71,9 @@ export default function AnalyzeScreen({ navigation, route }) {
         const loaded = getMonitoredPeople(data.user || user, data.profile?.relatives || []);
         const requestedId = route.params?.monitoredPersonId || storedId || DEFAULT_MONITORED_PERSON_ID;
         if (!loaded.some(person => person.id === requestedId)) {
-          throw new Error("A pessoa deste relato não está mais no prontuário. Volte e selecione uma pessoa antes de continuar.");
+          const missingPerson = new Error("A pessoa deste relato não está mais no prontuário. Volte e selecione uma pessoa antes de continuar.");
+          missingPerson.code = "PERSON_NOT_FOUND";
+          throw missingPerson;
         }
         if (mounted) { setPeople(loaded); setPersonId(requestedId); setPeopleReady(true); }
       } catch (error) {
@@ -79,7 +81,7 @@ export default function AnalyzeScreen({ navigation, route }) {
         if (error.response?.status === 401 || error.response?.status === 403) {
           setSessionExpired(true);
         } else {
-          setErrorMessage("Não foi possível carregar as pessoas do prontuário. Verifique sua conexão e reabra esta tela.");
+          setErrorMessage(error.code === "PERSON_NOT_FOUND" ? error.message : "Não foi possível carregar as pessoas do prontuário. Verifique sua conexão e reabra esta tela.");
         }
       }
     }

@@ -105,10 +105,3 @@ export const mockMonitoring = {
     }
   ]
 };
-
-export const mockDevices = [
-  { _id: "device-1", name: "Smartwatch", type: "wearable", battery: 85, connected: true },
-  { _id: "device-2", name: "Oximetro", type: "oximeter", battery: 90, connected: true },
-  { _id: "device-3", name: "Glicose", type: "glucose", battery: 80, connected: true },
-  { _id: "device-4", name: "Pressao arterial", type: "blood-pressure", battery: 70, connected: true }
-];

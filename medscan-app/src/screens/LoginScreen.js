@@ -6,6 +6,7 @@ import AuthInput from "../components/AuthInput";
 import AuthLayout from "../components/AuthLayout";
 import { useAuth } from "../context/AuthContext";
 import { fontFamily } from "../constants/theme";
+import { USE_COOKIE_AUTH } from "../api/client";
 
 export default function LoginScreen({ navigation, route }) {
   const { login, loading } = useAuth();
@@ -39,6 +40,7 @@ export default function LoginScreen({ navigation, route }) {
   return (
     <AuthLayout title={"Seu cuidado\n"} accent="continua aqui." subtitle="Entre e retome de onde parou." navigation={navigation}>
         <View style={styles.form}>
+          {route.params?.logoutWarning ? <Text accessibilityRole="alert" style={styles.error}>{route.params.logoutWarning}</Text> : null}
           <AuthInput
             label="E-mail"
             icon="email-outline"
@@ -63,6 +65,7 @@ export default function LoginScreen({ navigation, route }) {
           />
           {errorMessage ? <Text accessibilityRole="alert" style={styles.error}>{errorMessage}</Text> : null}
           {loading ? <Text style={{ color: colors.textMuted, fontFamily, fontSize: 13, lineHeight: 20 }}>Conectando com segurança. O primeiro acesso pode levar até um minuto.</Text> : null}
+          {!USE_COOKIE_AUTH ? <Text style={styles.linkHint}>Por segurança, entre novamente ao recarregar ou fechar o aplicativo.</Text> : null}
           <AuthButton title="Entrar na minha conta" style={styles.submit} onPress={handleLogin} loading={loading} />
 
         </View>

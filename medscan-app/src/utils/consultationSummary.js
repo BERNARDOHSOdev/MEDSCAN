@@ -10,7 +10,7 @@ export function consultationSummary(analysis, history, records, personName) {
       const answers = version.followUpContext?.at(-1);
       const questions = !entry.isOriginal && answers?.answer === version.additionalInfo && Array.isArray(answers.questions)
         ? answers.questions.map((question, i) => `${i + 1}. ${question}`).join("\n") : "";
-      return { title: `${entry.title} · ${timelineDate(version.createdAt)}`, body: [entry.parentLabel, questions && `Perguntas às quais este complemento responde:\n${questions}`, entry.input || entry.inputMissing, version.imageUrl && "Anexo enviado neste registro; consulte o documento original no app."].filter(Boolean).join("\n\n") };
+      return { title: `${entry.title} · ${timelineDate(version.createdAt)}`, body: [entry.parentLabel, questions && `Perguntas às quais este complemento responde:\n${questions}`, entry.input || entry.inputMissing, version.imageUrl && "Este registro tinha um anexo. O arquivo pode ficar indisponível depois que o serviço é reiniciado."].filter(Boolean).join("\n\n") };
     }) },
     { title: "2. Medições registradas", note: "Até 100 medições recentes desta pessoa, conforme o prontuário. Podem não estar relacionadas a este relato. Valores de demonstração foram excluídos; estes registros não confirmam precisão de um dispositivo.", entries: records.filter(record => record.source === "recorded" && (record.monitoredPersonId || "self") === personId).map(record => ({
       title: timelineDate(record.measuredAt),
