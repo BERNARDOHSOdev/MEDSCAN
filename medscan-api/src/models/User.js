@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema({
     min: 0,
     max: 120
   },
+  whatsapp: { type: String, default: "", trim: true },
   password: {
     type: String,
     required: true

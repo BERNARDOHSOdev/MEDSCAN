@@ -10,6 +10,7 @@ function sanitizeUser(user) {
     name: user.name,
     email: user.email,
     age: user.age,
+    whatsapp: user.whatsapp || "",
     createdAt: user.createdAt
   };
 }
@@ -27,6 +28,11 @@ async function register(req, res, next) {
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ message: "Informe um e-mail válido." });
     if (password.length < 8 || Buffer.byteLength(password, "utf8") > 72) return res.status(400).json({ message: "Use uma senha com pelo menos 8 caracteres e até 72 bytes." });
+    if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) return res.status(400).json({ message: "Inclua uma letra maiúscula, uma minúscula e um número na senha." });
+    if (req.body.whatsapp != null && typeof req.body.whatsapp !== "string") return res.status(400).json({ message: "Informe um WhatsApp válido." });
+    const phone = (req.body.whatsapp || "").replace(/[\s()+-]/g, "");
+    if (phone && !/^(?:55)?[1-9][0-9]9[0-9]{8}$/.test(phone)) return res.status(400).json({ message: "Informe um WhatsApp brasileiro com DDD e 9 dígitos." });
+    const whatsapp = phone ? `+${phone.length === 11 ? "55" : ""}${phone}` : "";
     const numericAge = typeof age === "boolean" ? NaN : Number(age);
     if (!Number.isInteger(numericAge) || numericAge < 0 || numericAge > 120) {
       return res.status(400).json({ message: "Informe uma idade válida entre 0 e 120 anos." });
@@ -42,6 +48,7 @@ async function register(req, res, next) {
       name,
       email,
       age: numericAge,
+      whatsapp,
       password: hashedPassword
     });
 

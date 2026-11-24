@@ -81,10 +81,10 @@ export function AuthProvider({ children }) {
     }
   }
 
-  async function register(name, email, age, password) {
+  async function register(name, email, age, password, whatsapp = "") {
     setLoading(true);
     try {
-      const data = await authRequest("/auth/register", { name, email, age, password });
+      const data = await authRequest("/auth/register", { name, email, age, password, whatsapp });
       await applySession(data);
       return data;
     } finally {

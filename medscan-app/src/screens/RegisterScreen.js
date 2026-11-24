@@ -16,18 +16,19 @@ export default function RegisterScreen({ navigation }) {
   const [age, setAge] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   async function handleRegister() {
     if (loading) return;
-    const validation = validateRegistration({ name, age, email, password, confirmPassword });
+    const validation = validateRegistration({ name, age, email, password, confirmPassword, whatsapp });
     if (validation) { setErrorMessage(validation); return; }
     const numericAge = Number(age);
 
     setErrorMessage("");
     try {
-      await register(name.trim(), email.trim().toLowerCase(), numericAge, password);
+      await register(name.trim(), email.trim().toLowerCase(), numericAge, password, whatsapp.trim());
       navigation.reset({ index: 0, routes: [{ name: "Home" }] });
     } catch (error) {
       setErrorMessage(error.message || "Não foi possível conectar. Tente novamente.");
@@ -62,6 +63,18 @@ export default function RegisterScreen({ navigation }) {
               placeholder="seuemail@exemplo.com"
             />
             <AuthInput
+              label="WhatsApp (opcional)"
+              icon="whatsapp"
+              value={whatsapp}
+              onChangeText={setWhatsapp}
+              keyboardType="phone-pad"
+              autoComplete="tel"
+              editable={!loading}
+              placeholder="(31) 99999-9999"
+              maxLength={22}
+            />
+            <Text style={styles.passwordHint}>Número brasileiro com DDD. Lembretes por WhatsApp estão previstos; nenhum envio será ativado neste cadastro.</Text>
+            <AuthInput
               label="Senha"
               icon="lock-outline"
               value={password}
@@ -71,7 +84,7 @@ export default function RegisterScreen({ navigation }) {
               editable={!loading}
               placeholder="Crie uma senha"
             />
-            <Text style={styles.passwordHint}>Use pelo menos 8 caracteres.</Text>
+            <Text style={styles.passwordHint}>Use pelo menos 8 caracteres, com letra maiúscula, minúscula e número.</Text>
             <AuthInput
               label="Confirmar senha"
               icon="lock-check-outline"

@@ -170,7 +170,7 @@ Ao final, a banca deve entender três ideias:
 >
 > Quando uma pessoa faz uma análise, o aplicativo envia o relato para a nossa API. O servidor valida os dados, conversa com o provedor de inteligência artificial e exige uma resposta em formato estruturado antes de salvar o resultado.
 >
-> As áreas privadas exigem autenticação. As senhas são armazenadas de forma protegida, e as chaves dos serviços externos ficam somente no servidor. Os registros também são separados pela conta e pela pessoa acompanhada.
+> As áreas privadas exigem autenticação. O cadastro pede uma senha com maiúscula, minúscula e número, armazenada de forma protegida. Também permite informar o WhatsApp, como preparação para futuros lembretes, que dependerão de confirmação e consentimento. As chaves dos serviços externos ficam somente no servidor, e os registros são separados pela conta e pela pessoa acompanhada.
 >
 > O projeto está versionado em um repositório público no GitHub e possui uma versão web hospedada para demonstração.
 

@@ -11,6 +11,21 @@ afterEach(() => { User.findOne = original.find; User.create = original.create; P
 function response() { return { statusCode: 200, status(code) { this.statusCode = code; return this; }, set() { return this; }, json(body) { this.body = body; return this; } }; }
 function next(error) { throw error; }
 const valid = { name: ' Pessoa Teste ', email: ' TESTE@example.com ', age: '30', password: 'Senha-teste-123' };
+test('stores normalized WhatsApp and rejects weak passwords and invalid phones', async () => {
+  User.findOne = async () => null;
+  let saved;
+  User.create = async data => { saved = { ...data, _id: 'test-user' }; return saved; };
+  Profile.create = async () => ({});
+  const result = response();
+  await register({ body: { ...valid, whatsapp: '(31) 99999-1234' } }, result, next);
+  assert.equal(result.statusCode, 201);
+  assert.equal(saved.whatsapp, '+5531999991234');
+  for (const patch of [{ whatsapp: '123' }, { whatsapp: {} }, { password: 'abcdefgh1' }, { password: 'ABCDEFGH1' }, { password: 'Abcdefghi' }]) {
+    const denied = response();
+    await register({ body: { ...valid, ...patch } }, denied, next);
+    assert.equal(denied.statusCode, 400);
+  }
+});
 test('register hashes password, normalizes account and returns a valid token; login verifies it', async () => {
   let saved;
   User.findOne = async () => null;
